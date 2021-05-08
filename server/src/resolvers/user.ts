@@ -106,7 +106,7 @@ export class UserResolver {
       password: hashedPassword,
     });
 
-    await User.save(newUser);
+    await User.insert(newUser);
 
     // jwt token
     const accessToken = createAccessToken(newUser);

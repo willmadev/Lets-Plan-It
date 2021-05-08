@@ -1,8 +1,8 @@
 import { verify } from "jsonwebtoken";
-import { User } from "src/entity/User";
-import { ACCESS_TOKEN_SECRET } from "src/helpers/env";
-import { MyContext } from "src/helpers/types";
 import { MiddlewareFn } from "type-graphql";
+import { User } from "../entity/User";
+import { ACCESS_TOKEN_SECRET } from "../helpers/env";
+import { MyContext } from "../helpers/types";
 
 export const isAuth: MiddlewareFn<MyContext> = async ({ context }, next) => {
   const authorization = context.req.headers["authorization"];
