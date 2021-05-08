@@ -2,6 +2,7 @@ import { User } from "../entity/User";
 import {
   Arg,
   createUnionType,
+  Ctx,
   Field,
   InputType,
   Mutation,
@@ -9,8 +10,9 @@ import {
   Resolver,
 } from "type-graphql";
 import { hash, compare } from "bcrypt";
-import { createAccessToken } from "../helpers/auth";
+import { createAccessToken, sendRefreshToken } from "../helpers/auth";
 import { SALT_ROUNDS } from "../helpers/env";
+import { MyContext } from "src/helpers/types";
 
 @InputType()
 class RegisterInput {
@@ -72,7 +74,10 @@ class LoginInput {
 @Resolver()
 export class UserResolver {
   @Mutation(() => AuthResult)
-  async register(@Arg("input") input: RegisterInput) {
+  async register(
+    @Ctx() { res }: MyContext,
+    @Arg("input") input: RegisterInput
+  ) {
     // validate input
     console.log(input);
 
@@ -107,6 +112,7 @@ export class UserResolver {
     const accessToken = createAccessToken(newUser);
 
     // TODO: Refresh token
+    sendRefreshToken(res, newUser);
 
     // Return payload
     const payload = new AuthPayload({
@@ -121,10 +127,7 @@ export class UserResolver {
   }
 
   @Mutation(() => AuthResult)
-  async login(
-    @Arg("input")
-    input: LoginInput
-  ) {
+  async login(@Ctx() { res }: MyContext, @Arg("input") input: LoginInput) {
     // validate input
     console.log(input);
 
@@ -147,6 +150,7 @@ export class UserResolver {
     const accessToken = createAccessToken(user);
 
     // TODO: Refresh token
+    sendRefreshToken(res, user);
 
     // return
     return new AuthPayload({
