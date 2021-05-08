@@ -2,7 +2,6 @@ import { User } from "../entity/User";
 import {
   Arg,
   createUnionType,
-  Ctx,
   Field,
   InputType,
   Mutation,
@@ -10,9 +9,8 @@ import {
   Resolver,
 } from "type-graphql";
 import { hash, compare } from "bcrypt";
-import { createAccessToken, sendRefreshToken } from "../helpers/auth";
+import { createAccessToken } from "../helpers/auth";
 import { SALT_ROUNDS } from "../helpers/env";
-import { MyContext } from "src/helpers/types";
 
 @InputType()
 class RegisterInput {
@@ -55,13 +53,9 @@ class AuthPayload {
 
 @ObjectType()
 class AuthError {
-  constructor({ field, message }: AuthError) {
+  constructor({ message }: AuthError) {
     this.message = message;
-    this.field = field;
   }
-  @Field()
-  field: "Email" | "Name" | "Password";
-
   @Field({ nullable: false })
   message: String;
 }
@@ -82,6 +76,21 @@ export class UserResolver {
     // validate input
     console.log(input);
 
+    // check if exists
+    try {
+      const existingUser = await User.findOne({ email: input.email });
+      console.log(existingUser);
+      if (existingUser) {
+        const error = new AuthError({
+          message: "Email already exists.",
+        });
+        return error;
+      }
+    } catch (err) {
+      console.error(err);
+      throw new Error("Database Lookup Error");
+    }
+
     // hash password
     const hashedPassword = await hash(input.password, SALT_ROUNDS ?? 10);
 
@@ -91,18 +100,8 @@ export class UserResolver {
       email: input.email,
       password: hashedPassword,
     });
-    try {
-      await User.save(newUser);
-    } catch (err) {
-      if (err.code === "23505") {
-        return new AuthError({
-          field: "Email",
-          message: "Email already exists",
-        });
-      }
-      console.error(err);
-      throw new Error("An error was encountered");
-    }
+
+    await User.save(newUser);
 
     // jwt token
     const accessToken = createAccessToken(newUser);
@@ -122,7 +121,10 @@ export class UserResolver {
   }
 
   @Mutation(() => AuthResult)
-  async login(@Arg("input") input: LoginInput, @Ctx() { res }: MyContext) {
+  async login(
+    @Arg("input")
+    input: LoginInput
+  ) {
     // validate input
     console.log(input);
 
@@ -130,7 +132,6 @@ export class UserResolver {
     const user = await User.findOne({ email: input.email });
     if (!user) {
       return new AuthError({
-        field: "Email",
         message: "No account found.",
       });
     }
@@ -138,7 +139,6 @@ export class UserResolver {
     // check password
     if (!(await compare(input.password, user.password))) {
       return new AuthError({
-        field: "Password",
         message: "Incorrect Password.",
       });
     }
@@ -147,7 +147,6 @@ export class UserResolver {
     const accessToken = createAccessToken(user);
 
     // TODO: Refresh token
-    sendRefreshToken(res, user);
 
     // return
     return new AuthPayload({
