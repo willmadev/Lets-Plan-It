@@ -5,19 +5,59 @@ import dotenv from "dotenv";
 dotenv.config();
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
+import cookieParser from "cookie-parser";
+import { verify } from "jsonwebtoken";
 import { HelloResolver } from "./resolvers/hello";
 import { TaskResolver } from "./resolvers/task";
 import { UserResolver } from "./resolvers/user";
 import { User } from "./entity/User";
+import { REFRESH_TOKEN_SECRET } from "./helpers/env";
+import { createAccessToken } from "./helpers/auth";
+
 const main = async () => {
   await createConnection();
 
-  console.log(await User.find());
-
   const app = express();
+
+  app.use(cookieParser());
 
   app.get("/", (_, res) => {
     res.send("hello world");
+  });
+
+  app.post("/refresh_token", async (req, res) => {
+    const token = req.cookies.rtk;
+    if (!token) {
+      return res
+        .status(400)
+        .json({ success: false, error: "No refresh token" });
+    }
+
+    let payload: any;
+    try {
+      payload = verify(token, REFRESH_TOKEN_SECRET);
+    } catch (err) {
+      console.error(err);
+      return res
+        .status(400)
+        .json({ success: false, error: "Refresh token error" });
+    }
+    console.log(payload);
+
+    const user = await User.findOne(payload.userId);
+
+    if (!user) {
+      return res.status(500).json({ success: false, error: "User not found" });
+    }
+
+    if (payload.version !== user.refreshTokenVersion) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Refresh token invalid" });
+    }
+    return res
+      .status(200)
+      .json({ success: true, accessToken: createAccessToken(user) });
   });
 
   const apolloServer = new ApolloServer({
@@ -25,6 +65,7 @@ const main = async () => {
       resolvers: [HelloResolver, TaskResolver, UserResolver],
       validate: false,
     }),
+    context: ({ req, res }) => ({ req, res }),
   });
 
   apolloServer.applyMiddleware({ app });
