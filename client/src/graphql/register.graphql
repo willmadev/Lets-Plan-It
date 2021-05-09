@@ -1,0 +1,15 @@
+mutation Register($input: RegisterInput!) {
+  register(input: $input) {
+    ... on AuthPayload {
+      id
+      email
+      name
+      accessToken
+    }
+
+    ... on AuthError {
+      field
+      message
+    }
+  }
+}

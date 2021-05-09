@@ -7,6 +7,7 @@ import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import cookieParser from "cookie-parser";
 import { verify } from "jsonwebtoken";
+import cors from "cors";
 import { HelloResolver } from "./resolvers/hello";
 import { TaskResolver } from "./resolvers/task";
 import { UserResolver } from "./resolvers/user";
@@ -19,6 +20,11 @@ const main = async () => {
 
   const app = express();
 
+  const corsOptions = {
+    origin: "http://localhost:3000",
+    credentials: true,
+  };
+  app.use(cors(corsOptions));
   app.use(cookieParser());
 
   app.get("/", (_, res) => {
@@ -68,7 +74,7 @@ const main = async () => {
     context: ({ req, res }) => ({ req, res }),
   });
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: corsOptions });
 
   app.listen(process.env.PORT, () => {
     console.log(`Server started on localhost:${process.env.PORT}`);

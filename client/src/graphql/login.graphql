@@ -1,0 +1,15 @@
+mutation Login($input: LoginInput!) {
+  login(input: $input) {
+    ... on AuthPayload {
+      id
+      email
+      name
+      accessToken
+    }
+
+    ... on AuthError {
+      field
+      message
+    }
+  }
+}
