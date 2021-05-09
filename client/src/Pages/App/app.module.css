@@ -1,0 +1,6 @@
+.pageWrapper {
+    display: grid;
+    grid-template-columns: min-content auto;
+    grid-template-rows: 100vh;
+    background-color: var(--page-background-color);
+}

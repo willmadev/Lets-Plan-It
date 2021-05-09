@@ -1,0 +1,62 @@
+.datePickerBtn {
+  display: flex;
+  background-color: white;
+  border: 1px black solid;
+}
+
+.datePickerBtn:hover {
+  background-color: lightgray;
+}
+
+.dropdownIcon {
+  margin-left: 4px;
+  font-size: 16px;
+}
+
+.dropdown {
+  width: fit-content;
+  height: fit-content;
+  padding: 5px;
+  border: 1px solid black;
+  border-radius: 10px;
+  box-shadow: -3px 3px 5px 0px rgba(0, 0, 0, 0.1);
+}
+
+.calendar {
+  border: none;
+  width: 285px;
+  margin-bottom: 20px;
+}
+
+.timePicker {
+  font-family: lato, sans-serif;
+  font-size: 1rem;
+}
+
+.timePicker input {
+  font-family: lato, sans-serif;
+  font-size: 1rem;
+}
+
+:global .react-calendar__navigation {
+  margin-bottom: 0;
+  height: 39px;
+}
+
+:global .react-calendar__viewContainer {
+  max-height: 246px;
+}
+
+:global .react-calendar__navigation__label__labelText,
+:global .react-calendar__year-view__months__month,
+:global .react-calendar__decade-view__years__year,
+:global .react-calendar__century-view__decades__decade {
+  font-family: lato, sans-serif;
+  font-size: 1rem;
+}
+
+:global .react-calendar__tile.react-calendar__year-view__months__month,
+:global .react-calendar__tile.react-calendar__decade-view__years__year,
+:global .react-calendar__tile.react-calendar__century-view__decades__decade {
+  padding: calc(100% / 8 - 19px) calc(100% / 6 - 40px);
+}
