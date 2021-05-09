@@ -55,10 +55,14 @@ class AuthPayload {
 
 @ObjectType()
 class AuthError {
-  constructor({ message }: AuthError) {
+  constructor({ field, message }: AuthError) {
+    this.field = field;
     this.message = message;
   }
-  @Field({ nullable: false })
+  @Field()
+  field: "Email" | "Password" | "Name";
+
+  @Field()
   message: String;
 }
 
@@ -87,6 +91,7 @@ export class UserResolver {
       console.log(existingUser);
       if (existingUser) {
         const error = new AuthError({
+          field: "Email",
           message: "Email already exists.",
         });
         return error;
@@ -135,6 +140,7 @@ export class UserResolver {
     const user = await User.findOne({ email: input.email });
     if (!user) {
       return new AuthError({
+        field: "Email",
         message: "No account found.",
       });
     }
@@ -142,6 +148,7 @@ export class UserResolver {
     // check password
     if (!(await compare(input.password, user.password))) {
       return new AuthError({
+        field: "Password",
         message: "Incorrect Password.",
       });
     }
