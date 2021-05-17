@@ -1,0 +1,17 @@
+mutation UpdateTask($input: UpdateTaskInput!){
+  updateTask(input: $input) {
+    ...on Task{
+      __typename
+      id
+      title
+      course
+      description
+      due
+    }
+    ...on MutateTaskError {
+      __typename
+      field
+      message
+    }
+  }
+}

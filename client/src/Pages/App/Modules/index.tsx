@@ -1,1 +1,1 @@
-export { default as TaskList } from "./TaskList";
+export { TaskModule } from "./TaskModule";

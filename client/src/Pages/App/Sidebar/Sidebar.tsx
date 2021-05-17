@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./sidebar.module.css";
 
 const Sidebar: React.FC<{ url: string }> = ({ url }) => {
+  console.log("Sidebar");
   return (
     <div className={styles.sidebarContainer}>
       <h1>Let's Plan It</h1>

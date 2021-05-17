@@ -1,11 +1,9 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Landing from "./Pages/Landing";
-// import Login from "./Login";
-// import Register from "./Register";
+
 import App from "./Pages/App";
-import TestAuth from "./TestAuth";
+import TestAuth from "./Pages/TestAuth";
 import { Login, Register } from "./Pages/Authentication";
-import DatePicker from "./Pages/App/Modules/DatePicker";
 
 const Router = () => {
   return (
@@ -16,7 +14,6 @@ const Router = () => {
         <Route exact path="/register" component={Register} />
         <Route exact path="/app" component={App} />
         <Route exact path="/testAuth" component={TestAuth} />
-        <Route exact path="/testdate" component={DatePicker} />
       </Switch>
     </BrowserRouter>
   );

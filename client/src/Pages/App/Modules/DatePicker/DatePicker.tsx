@@ -1,20 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  format,
-  add,
-  set,
-  getHours,
-  getMinutes,
-  sub,
-  isWithinInterval,
-  isToday,
-  isThisYear,
-} from "date-fns";
+import { format, add, set, getHours, getMinutes, sub } from "date-fns";
 import Calendar from "react-calendar";
-
-import "react-calendar/dist/Calendar.css";
-import styles from "./datepicker.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "react-calendar/dist/Calendar.css";
+
+import { formatDate } from "../../../../helpers/formatDate";
+import styles from "./datepicker.module.css";
 
 interface TimePickerProps {
   date: Date;
@@ -247,27 +238,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
   }, [dropdownActive]);
 
   useEffect(() => {
-    const formatDate = (date: Date) => {
-      console.log(date);
-      if (isToday(date)) {
-        // today return time
-        return format(date, "h:mm a");
-      } else if (
-        isWithinInterval(date, {
-          start: new Date(),
-          end: add(new Date(), { days: 6 }),
-        })
-      ) {
-        // this week return day of week and time
-        return format(date, "E h:mm a");
-      } else if (isThisYear(date)) {
-        // this year return month day time
-        return format(date, "MMM d h:mm a");
-      } else {
-        // return year month day time
-        return format(date, "MMM d, y h:mm a");
-      }
-    };
     setFormattedDate(formatDate(date));
   }, [date]);
 

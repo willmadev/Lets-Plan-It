@@ -1,0 +1,17 @@
+mutation CreateTask ($input: CreateTaskInput!){
+  createTask (input: $input) {
+    ...on Task{
+      __typename
+      id
+      title
+      course
+      description
+      due
+    }
+    ...on MutateTaskError{
+      __typename
+      field
+      message
+    }
+  }
+}
