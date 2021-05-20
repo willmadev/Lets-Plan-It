@@ -23,9 +23,13 @@ export class Task extends BaseEntity {
   @Column()
   course!: string;
 
-  @Field()
-  @Column("text")
+  @Field({ nullable: true })
+  @Column({ type: "text", nullable: true })
   description: string;
+
+  @Field({ defaultValue: false })
+  @Column()
+  completed: boolean;
 
   @Field(() => String)
   @Column()

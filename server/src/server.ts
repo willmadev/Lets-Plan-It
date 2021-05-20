@@ -2,12 +2,12 @@ import "reflect-metadata";
 import { createConnection } from "typeorm";
 import express from "express";
 import dotenv from "dotenv";
-dotenv.config();
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import cookieParser from "cookie-parser";
 import { verify } from "jsonwebtoken";
 import cors from "cors";
+
 import { HelloResolver } from "./resolvers/hello";
 import { TaskResolver } from "./resolvers/task";
 import { UserResolver } from "./resolvers/user";
@@ -16,6 +16,8 @@ import { REFRESH_TOKEN_SECRET } from "./helpers/env";
 import { createAccessToken } from "./helpers/auth";
 
 const main = async () => {
+  dotenv.config();
+
   await createConnection();
 
   const app = express();
