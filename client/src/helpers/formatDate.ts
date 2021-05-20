@@ -1,7 +1,6 @@
 import { isToday, format, isWithinInterval, add, isThisYear } from "date-fns";
 
 export const formatDate = (date: Date) => {
-  console.log(date);
   if (isToday(date)) {
     // today return time
     return format(date, "h:mm a");

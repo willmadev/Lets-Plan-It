@@ -1,5 +1,12 @@
+import { FetchResult } from "@apollo/client";
 import { FC, useState } from "react";
-import { Task, useAllTasksQuery } from "src/generated/graphql";
+import {
+  CreateTaskMutation,
+  Task,
+  useAllTasksQuery,
+  useCreateTaskMutation,
+  AllTasksDocument,
+} from "src/generated/graphql";
 import { formatDate } from "src/helpers/formatDate";
 import DatePicker from "../DatePicker";
 
@@ -15,11 +22,39 @@ const NewTask: FC = () => {
     setNewTask({ ...newTask, [field]: value });
   };
 
+  const [createTask] = useCreateTaskMutation();
+  const submitTask = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // input validation
+
+    let response: FetchResult<
+      CreateTaskMutation,
+      Record<string, any>,
+      Record<string, any>
+    >;
+    try {
+      response = await createTask({
+        variables: {
+          input: {
+            course: "test course",
+            due: newTask.date,
+            title: newTask.title,
+          },
+        },
+        refetchQueries: [{ query: AllTasksDocument }],
+      });
+      console.log(response);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <form
       name="new-task"
       className={styles.newTask_container}
-      onSubmit={(e) => e.preventDefault()}
+      onSubmit={(e) => submitTask(e)}
     >
       <input
         name="title"
@@ -52,9 +87,18 @@ interface TaskItemProps {
 }
 
 const TaskItem: FC<TaskItemProps> = ({ task }) => {
+  const [completed, setCompleted] = useState(false);
+  const completeTask = () => {
+    setCompleted(true);
+  };
   return (
     <div className={styles.taskItem_container}>
-      <div className={styles.taskItem_check}>O</div>
+      <input
+        type="checkbox"
+        className={styles.taskItem_check}
+        defaultChecked={completed}
+        onChange={(e) => completeTask()}
+      />
       <p className={styles.taskItem_title}>{task.title}</p>
       <p className={styles.taskItem_course}>{task.course}</p>
       <p className={styles.taskItem_due}>
@@ -65,7 +109,6 @@ const TaskItem: FC<TaskItemProps> = ({ task }) => {
 };
 
 const TaskList: FC = () => {
-  console.log("tasklist");
   const { loading, error, data } = useAllTasksQuery({
     fetchPolicy: "network-only",
   });
@@ -89,7 +132,7 @@ const TaskList: FC = () => {
   return (
     <div className={styles.taskList}>
       {data.allTasks.map((task) => {
-        return <TaskItem task={task} />;
+        return <TaskItem task={task} key={task.id} />;
       })}
     </div>
   );

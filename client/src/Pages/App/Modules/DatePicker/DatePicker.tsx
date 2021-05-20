@@ -150,7 +150,6 @@ const TimePicker: React.FC<TimePickerProps> = ({ date, setDate }) => {
       }
     } else if (6 <= cursorPosition) {
       const newPeriod = inputValue.substring(6).toUpperCase();
-      console.log(newPeriod);
       if (newPeriod.includes("P")) {
         period = "PM";
       } else if (newPeriod.includes("A")) {
