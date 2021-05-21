@@ -5,6 +5,7 @@ import {
   Field,
   ID,
   InputType,
+  Int,
   Mutation,
   ObjectType,
   Query,
@@ -14,6 +15,7 @@ import {
 import { Task } from "../entity/Task";
 import { isAuth } from "../middlewares/isAuth";
 import { MyContext } from "../helpers/types";
+import { getConnection } from "typeorm";
 
 @InputType()
 class CreateTaskInput {
@@ -66,23 +68,55 @@ class MutateTaskError {
   message: string;
 }
 
+@InputType()
+class TaskFilterInput {
+  @Field()
+  completed: boolean;
+}
+
 @Resolver()
 export class TaskResolver {
   @UseMiddleware(isAuth)
   @Query(() => [Task])
-  async allTasks(@Ctx() { user }: MyContext): Promise<Array<Task> | undefined> {
+  async getTasks(
+    @Ctx() { user }: MyContext,
+    @Arg("limit", () => Int, { defaultValue: 50 }) limit: number,
+    @Arg("cursor", () => ID, { nullable: true }) cursor: number,
+    @Arg("filter", () => TaskFilterInput, { nullable: true })
+    filter: TaskFilterInput
+  ): Promise<Array<Task> | undefined> {
     try {
-      const tasks = await Task.find({ where: { user: user } });
+      const realLimit = Math.min(50, limit);
+      const qb = getConnection()
+        .getRepository(Task)
+        .createQueryBuilder("task")
+        .orderBy("due", "ASC")
+        .take(realLimit)
+        .where('"userId" = :userId', { userId: user.id });
+
+      if (cursor) {
+        const cursorTask = await Task.findOne(cursor);
+        if (!cursorTask) {
+          throw new Error("Cursor not valid");
+        }
+        qb.andWhere("due > :cursor", { cursor: cursorTask.due });
+      }
+
+      if (filter?.completed) {
+        qb.andWhere("completed = :completed", { completed: filter.completed });
+      }
+
+      const tasks = await qb.getMany();
       return tasks;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       throw new Error();
     }
   }
 
   @UseMiddleware(isAuth)
   @Query(() => Task, { nullable: true })
-  async singleTask(
+  async getSingleTask(
     @Ctx() { user }: MyContext,
     @Arg("id", () => ID) id: number
   ): Promise<Task | undefined> {
@@ -106,6 +140,7 @@ export class TaskResolver {
       description: input.description,
       due: input.due,
       user: user,
+      completed: false,
     });
 
     try {

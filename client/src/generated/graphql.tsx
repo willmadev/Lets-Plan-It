@@ -91,12 +91,19 @@ export type Query = {
   __typename?: 'Query';
   hello: Scalars['String'];
   testAuth: Scalars['String'];
-  allTasks: Array<Task>;
-  singleTask?: Maybe<Task>;
+  getTasks: Array<Task>;
+  getSingleTask?: Maybe<Task>;
 };
 
 
-export type QuerySingleTaskArgs = {
+export type QueryGetTasksArgs = {
+  filter?: Maybe<TaskFilterInput>;
+  cursor?: Maybe<Scalars['ID']>;
+  limit?: Maybe<Scalars['Int']>;
+};
+
+
+export type QueryGetSingleTaskArgs = {
   id: Scalars['ID'];
 };
 
@@ -111,8 +118,13 @@ export type Task = {
   id: Scalars['ID'];
   title: Scalars['String'];
   course: Scalars['String'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  completed?: Maybe<Scalars['Boolean']>;
   due: Scalars['String'];
+};
+
+export type TaskFilterInput = {
+  completed: Scalars['Boolean'];
 };
 
 export type UpdateTaskInput = {
@@ -155,17 +167,6 @@ export type RegisterMutation = (
   ) }
 );
 
-export type AllTasksQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AllTasksQuery = (
-  { __typename?: 'Query' }
-  & { allTasks: Array<(
-    { __typename?: 'Task' }
-    & Pick<Task, 'id' | 'title' | 'course' | 'description' | 'due'>
-  )> }
-);
-
 export type CreateTaskMutationVariables = Exact<{
   input: CreateTaskInput;
 }>;
@@ -192,16 +193,29 @@ export type DeleteTaskMutation = (
   & Pick<Mutation, 'deleteTask'>
 );
 
-export type SingleTaskQueryVariables = Exact<{
-  id: Scalars['ID'];
-}>;
+export type SingleTaskQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type SingleTaskQuery = (
   { __typename?: 'Query' }
-  & { singleTask?: Maybe<(
+  & { getSingleTask?: Maybe<(
     { __typename?: 'Task' }
-    & Pick<Task, 'id' | 'title' | 'course' | 'description'>
+    & Pick<Task, 'id' | 'title' | 'course' | 'completed' | 'description' | 'due'>
+  )> }
+);
+
+export type GetTasksQueryVariables = Exact<{
+  cursor?: Maybe<Scalars['ID']>;
+  filter?: Maybe<TaskFilterInput>;
+  limit?: Maybe<Scalars['Int']>;
+}>;
+
+
+export type GetTasksQuery = (
+  { __typename?: 'Query' }
+  & { getTasks: Array<(
+    { __typename?: 'Task' }
+    & Pick<Task, 'id' | 'title' | 'course' | 'completed' | 'description' | 'due'>
   )> }
 );
 
@@ -322,44 +336,6 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
-export const AllTasksDocument = gql`
-    query AllTasks {
-  allTasks {
-    id
-    title
-    course
-    description
-    due
-  }
-}
-    `;
-
-/**
- * __useAllTasksQuery__
- *
- * To run a query within a React component, call `useAllTasksQuery` and pass it any options that fit your needs.
- * When your component renders, `useAllTasksQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useAllTasksQuery({
- *   variables: {
- *   },
- * });
- */
-export function useAllTasksQuery(baseOptions?: Apollo.QueryHookOptions<AllTasksQuery, AllTasksQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<AllTasksQuery, AllTasksQueryVariables>(AllTasksDocument, options);
-      }
-export function useAllTasksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AllTasksQuery, AllTasksQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<AllTasksQuery, AllTasksQueryVariables>(AllTasksDocument, options);
-        }
-export type AllTasksQueryHookResult = ReturnType<typeof useAllTasksQuery>;
-export type AllTasksLazyQueryHookResult = ReturnType<typeof useAllTasksLazyQuery>;
-export type AllTasksQueryResult = Apollo.QueryResult<AllTasksQuery, AllTasksQueryVariables>;
 export const CreateTaskDocument = gql`
     mutation CreateTask($input: CreateTaskInput!) {
   createTask(input: $input) {
@@ -437,12 +413,14 @@ export type DeleteTaskMutationHookResult = ReturnType<typeof useDeleteTaskMutati
 export type DeleteTaskMutationResult = Apollo.MutationResult<DeleteTaskMutation>;
 export type DeleteTaskMutationOptions = Apollo.BaseMutationOptions<DeleteTaskMutation, DeleteTaskMutationVariables>;
 export const SingleTaskDocument = gql`
-    query SingleTask($id: ID!) {
-  singleTask(id: $id) {
+    query SingleTask {
+  getSingleTask(id: 10) {
     id
     title
     course
+    completed
     description
+    due
   }
 }
     `;
@@ -459,11 +437,10 @@ export const SingleTaskDocument = gql`
  * @example
  * const { data, loading, error } = useSingleTaskQuery({
  *   variables: {
- *      id: // value for 'id'
  *   },
  * });
  */
-export function useSingleTaskQuery(baseOptions: Apollo.QueryHookOptions<SingleTaskQuery, SingleTaskQueryVariables>) {
+export function useSingleTaskQuery(baseOptions?: Apollo.QueryHookOptions<SingleTaskQuery, SingleTaskQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<SingleTaskQuery, SingleTaskQueryVariables>(SingleTaskDocument, options);
       }
@@ -474,6 +451,48 @@ export function useSingleTaskLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type SingleTaskQueryHookResult = ReturnType<typeof useSingleTaskQuery>;
 export type SingleTaskLazyQueryHookResult = ReturnType<typeof useSingleTaskLazyQuery>;
 export type SingleTaskQueryResult = Apollo.QueryResult<SingleTaskQuery, SingleTaskQueryVariables>;
+export const GetTasksDocument = gql`
+    query GetTasks($cursor: ID, $filter: TaskFilterInput, $limit: Int) {
+  getTasks(cursor: $cursor, filter: $filter, limit: $limit) {
+    id
+    title
+    course
+    completed
+    description
+    due
+  }
+}
+    `;
+
+/**
+ * __useGetTasksQuery__
+ *
+ * To run a query within a React component, call `useGetTasksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTasksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTasksQuery({
+ *   variables: {
+ *      cursor: // value for 'cursor'
+ *      filter: // value for 'filter'
+ *      limit: // value for 'limit'
+ *   },
+ * });
+ */
+export function useGetTasksQuery(baseOptions?: Apollo.QueryHookOptions<GetTasksQuery, GetTasksQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTasksQuery, GetTasksQueryVariables>(GetTasksDocument, options);
+      }
+export function useGetTasksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTasksQuery, GetTasksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTasksQuery, GetTasksQueryVariables>(GetTasksDocument, options);
+        }
+export type GetTasksQueryHookResult = ReturnType<typeof useGetTasksQuery>;
+export type GetTasksLazyQueryHookResult = ReturnType<typeof useGetTasksLazyQuery>;
+export type GetTasksQueryResult = Apollo.QueryResult<GetTasksQuery, GetTasksQueryVariables>;
 export const UpdateTaskDocument = gql`
     mutation UpdateTask($input: UpdateTaskInput!) {
   updateTask(input: $input) {

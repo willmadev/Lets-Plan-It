@@ -3,9 +3,10 @@ import { FC, useState } from "react";
 import {
   CreateTaskMutation,
   Task,
-  useAllTasksQuery,
+  useGetTasksQuery,
   useCreateTaskMutation,
-  AllTasksDocument,
+  GetTasksDocument,
+  // GetTasksQuery,
 } from "src/generated/graphql";
 import { formatDate } from "src/helpers/formatDate";
 import DatePicker from "../DatePicker";
@@ -22,7 +23,20 @@ const NewTask: FC = () => {
     setNewTask({ ...newTask, [field]: value });
   };
 
-  const [createTask] = useCreateTaskMutation();
+  const [createTask] = useCreateTaskMutation({
+    // update: (cache, {data}) => {
+    //   cache.modify({
+    //     fields:{
+    //       getTasks: (existingTasks) => {
+    //         const newTaskRef = cache.writeFragment({
+    //           data: data?.createTask,
+    //           fragment:
+    //         })
+    //       }
+    //     }
+    //   })
+    // },
+  });
   const submitTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -42,7 +56,7 @@ const NewTask: FC = () => {
             title: newTask.title,
           },
         },
-        refetchQueries: [{ query: AllTasksDocument }],
+        refetchQueries: [{ query: GetTasksDocument }],
       });
       console.log(response);
     } catch (err) {
@@ -100,7 +114,7 @@ const TaskItem: FC<TaskItemProps> = ({ task }) => {
         onChange={(e) => completeTask()}
       />
       <p className={styles.taskItem_title}>{task.title}</p>
-      <p className={styles.taskItem_course}>{task.course}</p>
+      <p className={styles.taskItem_course}>{task.id}</p>
       <p className={styles.taskItem_due}>
         {formatDate(new Date(parseInt(task.due)))}
       </p>
@@ -109,9 +123,15 @@ const TaskItem: FC<TaskItemProps> = ({ task }) => {
 };
 
 const TaskList: FC = () => {
-  const { loading, error, data } = useAllTasksQuery({
-    fetchPolicy: "network-only",
+  const { loading, error, data, fetchMore } = useGetTasksQuery({
+    variables: {
+      limit: 10,
+      filter: {
+        completed: false,
+      },
+    },
   });
+  console.log(data);
 
   if (loading) {
     return (
@@ -131,9 +151,21 @@ const TaskList: FC = () => {
 
   return (
     <div className={styles.taskList}>
-      {data.allTasks.map((task) => {
+      {data.getTasks.map((task) => {
         return <TaskItem task={task} key={task.id} />;
       })}
+      <button
+        onClick={async () =>
+          fetchMore({
+            variables: {
+              cursor: data.getTasks[data.getTasks.length - 1].id,
+              limit: 10,
+            },
+          })
+        }
+      >
+        Load More
+      </button>
     </div>
   );
 };

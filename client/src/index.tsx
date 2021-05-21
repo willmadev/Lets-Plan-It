@@ -90,7 +90,22 @@ const tokenRefreshLink = new TokenRefreshLink({
 
 const client = new ApolloClient({
   link: ApolloLink.from([tokenRefreshLink, authLink, httpLink]),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          getTasks: {
+            keyArgs: false,
+            merge(existing: any, incoming: any) {
+              console.log(incoming);
+              console.log(existing);
+              return [...(existing || []), ...incoming];
+            },
+          },
+        },
+      },
+    },
+  }),
   credentials: "include",
 });
 

@@ -1,9 +1,0 @@
-query AllTasks {
-  allTasks {
-    id
-    title
-    course
-    description
-    due
-  }
-}

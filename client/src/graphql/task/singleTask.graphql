@@ -1,8 +1,0 @@
-query SingleTask ($id: ID!) {
-  singleTask (id: $id){
-    id
-    title
-    course
-    description
-  }
-}
