@@ -245,6 +245,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
       <button
         className={styles.datePickerBtn}
         onClick={(e) => {
+          e.preventDefault();
           e.stopPropagation();
           setDropdownActive(!dropdownActive);
         }}
