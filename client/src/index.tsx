@@ -123,18 +123,18 @@ const client = new ApolloClient({
               // console.log("MERGE - merged:", merged);
               // return merged;
 
-              let merged = existing ? [...existing] : [];
-              console.log("MERGE - merged", merged);
+              let merged = incoming ? [...incoming] : [];
               if (incoming) {
-                const existingIdSet = new Set(
+                const incomingIdSet = new Set(
                   merged.map((task) => readField("id", task))
                 );
+                console.log("MERGE - incomingIdSet:", incomingIdSet);
 
-                incoming = incoming.filter(
-                  (task: any) => !existingIdSet.has(readField("id", task))
+                existing = existing.filter(
+                  (task: any) => !incomingIdSet.has(readField("id", task))
                 );
 
-                merged.push(...incoming);
+                merged.push(...existing);
               }
               console.log("MERGE - merged", merged);
               merged = merged.sort((a, b) => {
@@ -171,7 +171,7 @@ const client = new ApolloClient({
               console.log("READ - args:", args);
 
               let sorted = sortByDueDate(existing);
-              if (args?.filter.completed) {
+              if (args?.filter?.completed) {
                 sorted = sorted.filter(
                   (task: any) => task.completed === args.filter.completed
                 );

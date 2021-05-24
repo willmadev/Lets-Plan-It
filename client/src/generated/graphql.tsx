@@ -133,6 +133,7 @@ export type UpdateTaskInput = {
   course?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   due?: Maybe<Scalars['DateTime']>;
+  completed?: Maybe<Scalars['Boolean']>;
 };
 
 export type LoginMutationVariables = Exact<{
@@ -176,7 +177,7 @@ export type CreateTaskMutation = (
   { __typename?: 'Mutation' }
   & { createTask: (
     { __typename: 'Task' }
-    & Pick<Task, 'id' | 'title' | 'course' | 'description' | 'due'>
+    & Pick<Task, 'id' | 'title' | 'course' | 'description' | 'due' | 'completed'>
   ) | (
     { __typename: 'MutateTaskError' }
     & Pick<MutateTaskError, 'field' | 'message'>
@@ -228,7 +229,7 @@ export type UpdateTaskMutation = (
   { __typename?: 'Mutation' }
   & { updateTask: (
     { __typename: 'Task' }
-    & Pick<Task, 'id' | 'title' | 'course' | 'description' | 'due'>
+    & Pick<Task, 'id' | 'title' | 'course' | 'description' | 'due' | 'completed'>
   ) | (
     { __typename: 'MutateTaskError' }
     & Pick<MutateTaskError, 'field' | 'message'>
@@ -346,6 +347,7 @@ export const CreateTaskDocument = gql`
       course
       description
       due
+      completed
     }
     ... on MutateTaskError {
       __typename
@@ -503,6 +505,7 @@ export const UpdateTaskDocument = gql`
       course
       description
       due
+      completed
     }
     ... on MutateTaskError {
       __typename

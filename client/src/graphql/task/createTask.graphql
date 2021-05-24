@@ -7,6 +7,7 @@ mutation CreateTask ($input: CreateTaskInput!){
       course
       description
       due
+      completed
     }
     ...on MutateTaskError{
       __typename

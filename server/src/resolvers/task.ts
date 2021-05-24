@@ -48,6 +48,9 @@ class UpdateTaskInput {
 
   @Field({ nullable: true })
   due?: Date;
+
+  @Field({ nullable: true })
+  completed?: boolean;
 }
 
 const MutateTaskResult = createUnionType({
@@ -102,7 +105,7 @@ export class TaskResolver {
         qb.andWhere("due > :cursor", { cursor: cursorTask.due });
       }
 
-      if (filter?.completed) {
+      if (filter?.completed !== undefined) {
         qb.andWhere("completed = :completed", { completed: filter.completed });
       }
 
@@ -177,6 +180,7 @@ export class TaskResolver {
     if (input.course) task.course = input.course;
     if (input.description) task.description = input.description;
     if (input.due) task.due = input.due;
+    if (input.completed !== undefined) task.completed = input.completed;
 
     await Task.save(task);
     return task;

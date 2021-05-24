@@ -6,6 +6,7 @@ import {
   useGetTasksQuery,
   useCreateTaskMutation,
   GetTasksDocument,
+  useUpdateTaskMutation,
 } from "src/generated/graphql";
 import { formatDate } from "src/helpers/formatDate";
 // import { sortByDueDate } from "src/helpers/sortByDueDate";
@@ -41,8 +42,7 @@ const NewTask: FC = () => {
       // const newCache = [...getTasks, data?.createTask];
 
       // add completed field
-      let completedFieldData = data.createTask as Task;
-      completedFieldData.completed = true;
+      let completedFieldData = data.createTask;
       cache.writeQuery({
         query: GetTasksDocument,
         data: { getTasks: [completedFieldData] },
@@ -116,7 +116,22 @@ interface TaskItemProps {
 
 const TaskItem: FC<TaskItemProps> = ({ task }) => {
   const [completed, setCompleted] = useState(false);
-  const completeTask = () => {
+  const [updateTask] = useUpdateTaskMutation();
+  const completeTask = async () => {
+    let response;
+    try {
+      response = await updateTask({
+        variables: {
+          input: {
+            id: task.id,
+            completed: true,
+          },
+        },
+      });
+      console.log("complete task response:", response);
+    } catch (err) {
+      console.error("complete task error:", err);
+    }
     setCompleted(true);
   };
   return (
@@ -137,7 +152,7 @@ const TaskItem: FC<TaskItemProps> = ({ task }) => {
 };
 
 const TaskList: FC = () => {
-  const { loading, error, data, fetchMore } = useGetTasksQuery({
+  const { error, data, fetchMore } = useGetTasksQuery({
     variables: {
       limit: 10,
       filter: {
@@ -148,13 +163,13 @@ const TaskList: FC = () => {
   });
   console.log("tasklist data:", data);
 
-  if (loading) {
-    return (
-      <div>
-        <p>loading...</p>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div>
+  //       <p>loading...</p>
+  //     </div>
+  //   );
+  // }
 
   if (error) {
     console.error("tasklist error:", error);
@@ -172,7 +187,11 @@ const TaskList: FC = () => {
   return (
     <div className={styles.taskList}>
       {data.getTasks.map((task) => {
-        return <TaskItem task={task} key={task.id} />;
+        if (!task.completed) {
+          return <TaskItem task={task} key={task.id} />;
+        } else {
+          return null;
+        }
       })}
       {loadMoreActive ? (
         <button
@@ -181,6 +200,9 @@ const TaskList: FC = () => {
               variables: {
                 cursor: data.getTasks[data.getTasks.length - 1].id,
                 limit: 10,
+                filter: {
+                  completed: false,
+                },
               },
             })
           }
