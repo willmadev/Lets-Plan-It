@@ -6,6 +6,7 @@ import {
   ManyToOne,
   BaseEntity,
 } from "typeorm";
+import { Course } from "./Course";
 import { User } from "./User";
 
 @ObjectType()
@@ -19,9 +20,9 @@ export class Task extends BaseEntity {
   @Column()
   title!: string;
 
-  @Field()
-  @Column()
-  course!: string;
+  @Field(() => Course)
+  @ManyToOne(() => Course, (course) => course.tasks)
+  course!: Course;
 
   @Field({ nullable: true })
   @Column({ type: "text", nullable: true })

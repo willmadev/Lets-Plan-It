@@ -14,6 +14,7 @@ import { UserResolver } from "./resolvers/user";
 import { User } from "./entity/User";
 import { REFRESH_TOKEN_SECRET } from "./helpers/env";
 import { createAccessToken } from "./helpers/auth";
+import { CourseResolver } from "./resolvers/course";
 
 const main = async () => {
   dotenv.config();
@@ -70,7 +71,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, TaskResolver, UserResolver],
+      resolvers: [HelloResolver, TaskResolver, UserResolver, CourseResolver],
       validate: false,
     }),
     context: ({ req, res }) => ({ req, res }),

@@ -16,6 +16,7 @@ import { Task } from "../entity/Task";
 import { isAuth } from "../middlewares/isAuth";
 import { MyContext } from "../helpers/types";
 import { getConnection } from "typeorm";
+import { Course } from "../entity/Course";
 
 @InputType()
 class CreateTaskInput {
@@ -136,10 +137,18 @@ export class TaskResolver {
     console.log(input);
     console.log(user);
 
+    const course = await Course.findOne(input.course);
+    if (!course) {
+      return new MutateTaskError({
+        field: "course",
+        message: "Course could not be found",
+      });
+    }
+
     // enter into db
     const task = Task.create({
       title: input.title,
-      course: input.course,
+      course: course,
       description: input.description,
       due: input.due,
       user: user,
@@ -173,11 +182,20 @@ export class TaskResolver {
         message: "Task not found",
       });
     }
+    if (input.course) {
+      const course = await Course.findOne(input.course);
+      if (!course) {
+        return new MutateTaskError({
+          field: "course",
+          message: "Course not found",
+        });
+      }
+      task.course = course;
+    }
 
     console.log(task);
 
     if (input.title) task.title = input.title;
-    if (input.course) task.course = input.course;
     if (input.description) task.description = input.description;
     if (input.due) task.due = input.due;
     if (input.completed !== undefined) task.completed = input.completed;

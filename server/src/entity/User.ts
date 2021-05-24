@@ -7,6 +7,7 @@ import {
   BaseEntity,
   Generated,
 } from "typeorm";
+import { Course } from "./Course";
 import { Task } from "./Task";
 
 @ObjectType()
@@ -30,6 +31,9 @@ export class User extends BaseEntity {
   @Column()
   @Generated("increment")
   refreshTokenVersion!: number;
+
+  @OneToMany(() => Course, (course) => course.user)
+  courses: Course[];
 
   @OneToMany(() => Task, (task) => task.user)
   tasks: Task[];
