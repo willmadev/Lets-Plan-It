@@ -237,7 +237,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   }, [dropdownActive]);
 
   useEffect(() => {
-    setFormattedDate(formatDate(date));
+    setFormattedDate(formatDate(date) || "error");
   }, [date]);
 
   return (

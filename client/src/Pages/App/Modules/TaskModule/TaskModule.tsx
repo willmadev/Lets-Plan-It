@@ -6,9 +6,9 @@ import {
   useGetTasksQuery,
   useCreateTaskMutation,
   GetTasksDocument,
-  // GetTasksQuery,
 } from "src/generated/graphql";
 import { formatDate } from "src/helpers/formatDate";
+// import { sortByDueDate } from "src/helpers/sortByDueDate";
 import DatePicker from "../DatePicker";
 
 import styles from "./taskModule.module.css";
@@ -24,18 +24,32 @@ const NewTask: FC = () => {
   };
 
   const [createTask] = useCreateTaskMutation({
-    // update: (cache, {data}) => {
-    //   cache.modify({
-    //     fields:{
-    //       getTasks: (existingTasks) => {
-    //         const newTaskRef = cache.writeFragment({
-    //           data: data?.createTask,
-    //           fragment:
-    //         })
-    //       }
-    //     }
-    //   })
-    // },
+    // update cache to add newly created task
+    update: (cache, { data }) => {
+      if (!data) {
+        return;
+      }
+
+      if (data.createTask.__typename === "MutateTaskError") {
+        return;
+      }
+
+      // const { getTasks } = cache.readQuery({
+      //   query: GetTasksDocument,
+      // }) ?? { getTask: null };
+
+      // const newCache = [...getTasks, data?.createTask];
+
+      // add completed field
+      let completedFieldData = data.createTask as Task;
+      completedFieldData.completed = true;
+      cache.writeQuery({
+        query: GetTasksDocument,
+        data: { getTasks: [completedFieldData] },
+      });
+
+      console.log("new cache", completedFieldData);
+    },
   });
   const submitTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,11 +70,11 @@ const NewTask: FC = () => {
             title: newTask.title,
           },
         },
-        refetchQueries: [{ query: GetTasksDocument }],
+        // refetchQueries: [{ query: GetTasksDocument }],
       });
-      console.log(response);
+      console.log("create task response:", response);
     } catch (err) {
-      console.error(err);
+      console.error("create task error:", err);
     }
   };
 
@@ -116,7 +130,7 @@ const TaskItem: FC<TaskItemProps> = ({ task }) => {
       <p className={styles.taskItem_title}>{task.title}</p>
       <p className={styles.taskItem_course}>{task.id}</p>
       <p className={styles.taskItem_due}>
-        {formatDate(new Date(parseInt(task.due)))}
+        {formatDate(new Date(parseInt(task.due))) ?? task.due}
       </p>
     </div>
   );
@@ -130,8 +144,9 @@ const TaskList: FC = () => {
         completed: false,
       },
     },
+    fetchPolicy: "cache-and-network",
   });
-  console.log(data);
+  console.log("tasklist data:", data);
 
   if (loading) {
     return (
@@ -142,30 +157,39 @@ const TaskList: FC = () => {
   }
 
   if (error) {
-    console.error(error);
+    console.error("tasklist error:", error);
   }
 
   if (!data) {
-    return <div>no tasks found</div>;
+    return (
+      <div>
+        <p>no tasks found</p>
+      </div>
+    );
   }
+  const loadMoreActive = !!data.getTasks[data.getTasks.length - 1];
 
   return (
     <div className={styles.taskList}>
       {data.getTasks.map((task) => {
         return <TaskItem task={task} key={task.id} />;
       })}
-      <button
-        onClick={async () =>
-          fetchMore({
-            variables: {
-              cursor: data.getTasks[data.getTasks.length - 1].id,
-              limit: 10,
-            },
-          })
-        }
-      >
-        Load More
-      </button>
+      {loadMoreActive ? (
+        <button
+          onClick={async () =>
+            fetchMore({
+              variables: {
+                cursor: data.getTasks[data.getTasks.length - 1].id,
+                limit: 10,
+              },
+            })
+          }
+        >
+          Load More
+        </button>
+      ) : (
+        <p>Enter a task above</p>
+      )}
     </div>
   );
 };
