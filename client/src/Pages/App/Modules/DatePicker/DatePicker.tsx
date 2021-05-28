@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { format, add, set, getHours, getMinutes, sub } from "date-fns";
 import Calendar from "react-calendar";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "react-calendar/dist/Calendar.css";
 
 import { formatDate } from "../../../../helpers/formatDate";
+import { Dropdown } from "../Dropdown";
 import styles from "./datepicker.module.css";
 
 interface TimePickerProps {
@@ -182,30 +182,25 @@ const TimePicker: React.FC<TimePickerProps> = ({ date, setDate }) => {
   );
 };
 
-interface DropdownProps {
-  date: Date;
-  setDate: Function;
-}
-
-const Dropdown: React.FC<DropdownProps> = ({ date, setDate }) => {
-  return (
-    <div className={styles.dropdown} onClick={(e) => e.stopPropagation()}>
-      <Calendar
-        className={styles.calendar}
-        returnValue="start"
-        calendarType="US"
-        onChange={(newDate) => {
-          setDate(
-            // @ts-ignore
-            set(newDate, { hours: getHours(date), minutes: getMinutes(date) })
-          );
-        }}
-        value={date}
-      />
-      <TimePicker setDate={setDate} date={date} />
-    </div>
-  );
-};
+// const Dropdown: React.FC<DropdownProps> = ({ date, setDate }) => {
+//   return (
+//     <div className={styles.dropdown} onClick={(e) => e.stopPropagation()}>
+//       <Calendar
+//         className={styles.calendar}
+//         returnValue="start"
+//         calendarType="US"
+//         onChange={(newDate) => {
+//           setDate(
+//             // @ts-ignore
+//             set(newDate, { hours: getHours(date), minutes: getMinutes(date) })
+//           );
+//         }}
+//         value={date}
+//       />
+//       <TimePicker setDate={setDate} date={date} />
+//     </div>
+//   );
+// };
 
 interface DatePickerProps {
   className: string;
@@ -241,24 +236,21 @@ const DatePicker: React.FC<DatePickerProps> = ({
   }, [date]);
 
   return (
-    <div className={className}>
-      <button
-        className={styles.datePickerBtn}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setDropdownActive(!dropdownActive);
+    <Dropdown className={className} value={formattedDate}>
+      <Calendar
+        className={styles.calendar}
+        returnValue="start"
+        calendarType="US"
+        onChange={(newDate) => {
+          setFormattedDate(
+            // @ts-ignore
+            set(newDate, { hours: getHours(date), minutes: getMinutes(date) })
+          );
         }}
-      >
-        <p>{formattedDate}</p>
-        {dropdownActive ? (
-          <FontAwesomeIcon icon="caret-up" className={styles.dropdownIcon} />
-        ) : (
-          <FontAwesomeIcon icon="caret-down" className={styles.dropdownIcon} />
-        )}
-      </button>
-      {dropdownActive ? <Dropdown date={date} setDate={onChange} /> : null}
-    </div>
+        value={date}
+      />
+      <TimePicker setDate={setFormattedDate} date={date} />
+    </Dropdown>
   );
 };
 export default DatePicker;
