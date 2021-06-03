@@ -4,7 +4,10 @@ mutation CreateTask ($input: CreateTaskInput!){
       __typename
       id
       title
-      course
+      course {
+        id
+        courseName
+      }
       description
       due
       completed

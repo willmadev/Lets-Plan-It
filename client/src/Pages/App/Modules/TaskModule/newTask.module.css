@@ -1,0 +1,41 @@
+.container {
+  margin-top: 25px;
+  width: 85%;
+  display: grid;
+  grid-template-columns: min-content auto min-content;
+  grid-template-rows: min-content min-content;
+  row-gap: 5px;
+}
+
+.titleInput {
+  font-family: lato, sans-serif;
+  font-size: 1rem;
+  padding: 1px 10px;
+  grid-row: 1;
+  grid-column: 1 / 4;
+  width: calc(100% - 20px);
+  height: 2rem;
+  border: 1px solid black;
+  border-radius: 20px;
+}
+
+.selectorContainer {
+  grid-row: 2;
+  grid-column: 1;
+  margin: 0px 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.datePicker {
+  width: max-content;
+}
+
+.coursePicker {
+  color: blue;
+}
+
+.submit {
+  grid-row: 2;
+  grid-column: 3;
+}

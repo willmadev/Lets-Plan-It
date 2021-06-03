@@ -1,3 +1,13 @@
+.dropdownBtn {
+  display: flex;
+  width: max-content;
+  background-color: white;
+  border: 1px black solid;
+}
+
+.dropdownBtn:hover {
+  background-color: lightgray;
+}
 .dropdownIcon {
   margin-left: 4px;
   font-size: 16px;

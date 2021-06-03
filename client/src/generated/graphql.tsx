@@ -32,9 +32,20 @@ export type AuthPayload = {
 
 export type AuthResult = AuthPayload | AuthError;
 
+export type Course = {
+  __typename?: 'Course';
+  id: Scalars['ID'];
+  courseName: Scalars['String'];
+  tasks?: Maybe<Array<Task>>;
+};
+
+export type CreateCourseInput = {
+  courseName: Scalars['String'];
+};
+
 export type CreateTaskInput = {
   title: Scalars['String'];
-  course: Scalars['String'];
+  course: Scalars['ID'];
   description?: Maybe<Scalars['String']>;
   due: Scalars['DateTime'];
 };
@@ -44,6 +55,14 @@ export type LoginInput = {
   email: Scalars['String'];
   password: Scalars['String'];
 };
+
+export type MutateCourseError = {
+  __typename?: 'MutateCourseError';
+  field: Scalars['String'];
+  message: Scalars['String'];
+};
+
+export type MutateCourseResult = Course | MutateCourseError;
 
 export type MutateTaskError = {
   __typename?: 'MutateTaskError';
@@ -60,6 +79,9 @@ export type Mutation = {
   deleteTask: Scalars['Boolean'];
   register: AuthResult;
   login: AuthResult;
+  createCourse: MutateCourseResult;
+  updateCourse: MutateCourseResult;
+  deleteCourse: Scalars['Boolean'];
 };
 
 
@@ -87,12 +109,29 @@ export type MutationLoginArgs = {
   input: LoginInput;
 };
 
+
+export type MutationCreateCourseArgs = {
+  input: CreateCourseInput;
+};
+
+
+export type MutationUpdateCourseArgs = {
+  input: UpdateCourseInput;
+};
+
+
+export type MutationDeleteCourseArgs = {
+  id: Scalars['ID'];
+};
+
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String'];
   testAuth: Scalars['String'];
   getTasks: Array<Task>;
   getSingleTask?: Maybe<Task>;
+  getCourses?: Maybe<Array<Course>>;
+  getSingleCourse?: Maybe<Course>;
 };
 
 
@@ -107,6 +146,11 @@ export type QueryGetSingleTaskArgs = {
   id: Scalars['ID'];
 };
 
+
+export type QueryGetSingleCourseArgs = {
+  id: Scalars['ID'];
+};
+
 export type RegisterInput = {
   name: Scalars['String'];
   email: Scalars['String'];
@@ -117,7 +161,7 @@ export type Task = {
   __typename?: 'Task';
   id: Scalars['ID'];
   title: Scalars['String'];
-  course: Scalars['String'];
+  course: Course;
   description?: Maybe<Scalars['String']>;
   completed?: Maybe<Scalars['Boolean']>;
   due: Scalars['String'];
@@ -125,6 +169,11 @@ export type Task = {
 
 export type TaskFilterInput = {
   completed: Scalars['Boolean'];
+};
+
+export type UpdateCourseInput = {
+  id: Scalars['ID'];
+  courseName?: Maybe<Scalars['String']>;
 };
 
 export type UpdateTaskInput = {
@@ -135,6 +184,92 @@ export type UpdateTaskInput = {
   due?: Maybe<Scalars['DateTime']>;
   completed?: Maybe<Scalars['Boolean']>;
 };
+
+export type CreateCourseMutationVariables = Exact<{
+  input: CreateCourseInput;
+}>;
+
+
+export type CreateCourseMutation = (
+  { __typename?: 'Mutation' }
+  & { createCourse: (
+    { __typename: 'Course' }
+    & Pick<Course, 'id' | 'courseName'>
+    & { tasks?: Maybe<Array<(
+      { __typename?: 'Task' }
+      & Pick<Task, 'id' | 'title'>
+    )>> }
+  ) | (
+    { __typename: 'MutateCourseError' }
+    & Pick<MutateCourseError, 'field' | 'message'>
+  ) }
+);
+
+export type DeleteCourseMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeleteCourseMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteCourse'>
+);
+
+export type CoursesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CoursesQuery = (
+  { __typename?: 'Query' }
+  & { getCourses?: Maybe<Array<(
+    { __typename?: 'Course' }
+    & Pick<Course, 'id' | 'courseName'>
+    & { tasks?: Maybe<Array<(
+      { __typename?: 'Task' }
+      & Pick<Task, 'id' | 'title' | 'due'>
+      & { course: (
+        { __typename?: 'Course' }
+        & Pick<Course, 'id' | 'courseName'>
+      ) }
+    )>> }
+  )>> }
+);
+
+export type SingleCourseQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type SingleCourseQuery = (
+  { __typename?: 'Query' }
+  & { getSingleCourse?: Maybe<(
+    { __typename?: 'Course' }
+    & Pick<Course, 'id' | 'courseName'>
+    & { tasks?: Maybe<Array<(
+      { __typename?: 'Task' }
+      & Pick<Task, 'id' | 'title'>
+    )>> }
+  )> }
+);
+
+export type UpdateCourseMutationVariables = Exact<{
+  input: UpdateCourseInput;
+}>;
+
+
+export type UpdateCourseMutation = (
+  { __typename?: 'Mutation' }
+  & { updateCourse: (
+    { __typename: 'Course' }
+    & Pick<Course, 'id' | 'courseName'>
+    & { tasks?: Maybe<Array<(
+      { __typename?: 'Task' }
+      & Pick<Task, 'id' | 'title'>
+    )>> }
+  ) | (
+    { __typename: 'MutateCourseError' }
+    & Pick<MutateCourseError, 'field' | 'message'>
+  ) }
+);
 
 export type LoginMutationVariables = Exact<{
   input: LoginInput;
@@ -177,7 +312,11 @@ export type CreateTaskMutation = (
   { __typename?: 'Mutation' }
   & { createTask: (
     { __typename: 'Task' }
-    & Pick<Task, 'id' | 'title' | 'course' | 'description' | 'due' | 'completed'>
+    & Pick<Task, 'id' | 'title' | 'description' | 'due' | 'completed'>
+    & { course: (
+      { __typename?: 'Course' }
+      & Pick<Course, 'id' | 'courseName'>
+    ) }
   ) | (
     { __typename: 'MutateTaskError' }
     & Pick<MutateTaskError, 'field' | 'message'>
@@ -201,7 +340,11 @@ export type SingleTaskQuery = (
   { __typename?: 'Query' }
   & { getSingleTask?: Maybe<(
     { __typename?: 'Task' }
-    & Pick<Task, 'id' | 'title' | 'course' | 'completed' | 'description' | 'due'>
+    & Pick<Task, 'id' | 'title' | 'completed' | 'description' | 'due'>
+    & { course: (
+      { __typename?: 'Course' }
+      & Pick<Course, 'id' | 'courseName'>
+    ) }
   )> }
 );
 
@@ -216,7 +359,11 @@ export type GetTasksQuery = (
   { __typename?: 'Query' }
   & { getTasks: Array<(
     { __typename?: 'Task' }
-    & Pick<Task, 'id' | 'title' | 'course' | 'completed' | 'description' | 'due'>
+    & Pick<Task, 'id' | 'title' | 'completed' | 'description' | 'due'>
+    & { course: (
+      { __typename?: 'Course' }
+      & Pick<Course, 'id' | 'courseName'>
+    ) }
   )> }
 );
 
@@ -229,7 +376,11 @@ export type UpdateTaskMutation = (
   { __typename?: 'Mutation' }
   & { updateTask: (
     { __typename: 'Task' }
-    & Pick<Task, 'id' | 'title' | 'course' | 'description' | 'due' | 'completed'>
+    & Pick<Task, 'id' | 'title' | 'description' | 'due' | 'completed'>
+    & { course: (
+      { __typename?: 'Course' }
+      & Pick<Course, 'id' | 'courseName'>
+    ) }
   ) | (
     { __typename: 'MutateTaskError' }
     & Pick<MutateTaskError, 'field' | 'message'>
@@ -253,6 +404,213 @@ export type TestAuthQuery = (
 );
 
 
+export const CreateCourseDocument = gql`
+    mutation CreateCourse($input: CreateCourseInput!) {
+  createCourse(input: $input) {
+    ... on Course {
+      __typename
+      id
+      courseName
+      tasks {
+        id
+        title
+      }
+    }
+    ... on MutateCourseError {
+      __typename
+      field
+      message
+    }
+  }
+}
+    `;
+export type CreateCourseMutationFn = Apollo.MutationFunction<CreateCourseMutation, CreateCourseMutationVariables>;
+
+/**
+ * __useCreateCourseMutation__
+ *
+ * To run a mutation, you first call `useCreateCourseMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCourseMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCourseMutation, { data, loading, error }] = useCreateCourseMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateCourseMutation(baseOptions?: Apollo.MutationHookOptions<CreateCourseMutation, CreateCourseMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateCourseMutation, CreateCourseMutationVariables>(CreateCourseDocument, options);
+      }
+export type CreateCourseMutationHookResult = ReturnType<typeof useCreateCourseMutation>;
+export type CreateCourseMutationResult = Apollo.MutationResult<CreateCourseMutation>;
+export type CreateCourseMutationOptions = Apollo.BaseMutationOptions<CreateCourseMutation, CreateCourseMutationVariables>;
+export const DeleteCourseDocument = gql`
+    mutation DeleteCourse($id: ID!) {
+  deleteCourse(id: $id)
+}
+    `;
+export type DeleteCourseMutationFn = Apollo.MutationFunction<DeleteCourseMutation, DeleteCourseMutationVariables>;
+
+/**
+ * __useDeleteCourseMutation__
+ *
+ * To run a mutation, you first call `useDeleteCourseMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteCourseMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteCourseMutation, { data, loading, error }] = useDeleteCourseMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteCourseMutation(baseOptions?: Apollo.MutationHookOptions<DeleteCourseMutation, DeleteCourseMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteCourseMutation, DeleteCourseMutationVariables>(DeleteCourseDocument, options);
+      }
+export type DeleteCourseMutationHookResult = ReturnType<typeof useDeleteCourseMutation>;
+export type DeleteCourseMutationResult = Apollo.MutationResult<DeleteCourseMutation>;
+export type DeleteCourseMutationOptions = Apollo.BaseMutationOptions<DeleteCourseMutation, DeleteCourseMutationVariables>;
+export const CoursesDocument = gql`
+    query Courses {
+  getCourses {
+    id
+    courseName
+    tasks {
+      id
+      title
+      course {
+        id
+        courseName
+      }
+      due
+    }
+  }
+}
+    `;
+
+/**
+ * __useCoursesQuery__
+ *
+ * To run a query within a React component, call `useCoursesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCoursesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCoursesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useCoursesQuery(baseOptions?: Apollo.QueryHookOptions<CoursesQuery, CoursesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<CoursesQuery, CoursesQueryVariables>(CoursesDocument, options);
+      }
+export function useCoursesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CoursesQuery, CoursesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<CoursesQuery, CoursesQueryVariables>(CoursesDocument, options);
+        }
+export type CoursesQueryHookResult = ReturnType<typeof useCoursesQuery>;
+export type CoursesLazyQueryHookResult = ReturnType<typeof useCoursesLazyQuery>;
+export type CoursesQueryResult = Apollo.QueryResult<CoursesQuery, CoursesQueryVariables>;
+export const SingleCourseDocument = gql`
+    query SingleCourse($id: ID!) {
+  getSingleCourse(id: $id) {
+    id
+    courseName
+    tasks {
+      id
+      title
+    }
+  }
+}
+    `;
+
+/**
+ * __useSingleCourseQuery__
+ *
+ * To run a query within a React component, call `useSingleCourseQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSingleCourseQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSingleCourseQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSingleCourseQuery(baseOptions: Apollo.QueryHookOptions<SingleCourseQuery, SingleCourseQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SingleCourseQuery, SingleCourseQueryVariables>(SingleCourseDocument, options);
+      }
+export function useSingleCourseLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SingleCourseQuery, SingleCourseQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SingleCourseQuery, SingleCourseQueryVariables>(SingleCourseDocument, options);
+        }
+export type SingleCourseQueryHookResult = ReturnType<typeof useSingleCourseQuery>;
+export type SingleCourseLazyQueryHookResult = ReturnType<typeof useSingleCourseLazyQuery>;
+export type SingleCourseQueryResult = Apollo.QueryResult<SingleCourseQuery, SingleCourseQueryVariables>;
+export const UpdateCourseDocument = gql`
+    mutation UpdateCourse($input: UpdateCourseInput!) {
+  updateCourse(input: $input) {
+    ... on Course {
+      __typename
+      id
+      courseName
+      tasks {
+        id
+        title
+      }
+    }
+    ... on MutateCourseError {
+      __typename
+      field
+      message
+    }
+  }
+}
+    `;
+export type UpdateCourseMutationFn = Apollo.MutationFunction<UpdateCourseMutation, UpdateCourseMutationVariables>;
+
+/**
+ * __useUpdateCourseMutation__
+ *
+ * To run a mutation, you first call `useUpdateCourseMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCourseMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCourseMutation, { data, loading, error }] = useUpdateCourseMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCourseMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCourseMutation, UpdateCourseMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCourseMutation, UpdateCourseMutationVariables>(UpdateCourseDocument, options);
+      }
+export type UpdateCourseMutationHookResult = ReturnType<typeof useUpdateCourseMutation>;
+export type UpdateCourseMutationResult = Apollo.MutationResult<UpdateCourseMutation>;
+export type UpdateCourseMutationOptions = Apollo.BaseMutationOptions<UpdateCourseMutation, UpdateCourseMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($input: LoginInput!) {
   login(input: $input) {
@@ -344,7 +702,10 @@ export const CreateTaskDocument = gql`
       __typename
       id
       title
-      course
+      course {
+        id
+        courseName
+      }
       description
       due
       completed
@@ -419,7 +780,10 @@ export const SingleTaskDocument = gql`
   getSingleTask(id: 10) {
     id
     title
-    course
+    course {
+      id
+      courseName
+    }
     completed
     description
     due
@@ -458,7 +822,10 @@ export const GetTasksDocument = gql`
   getTasks(cursor: $cursor, filter: $filter, limit: $limit) {
     id
     title
-    course
+    course {
+      id
+      courseName
+    }
     completed
     description
     due
@@ -502,7 +869,10 @@ export const UpdateTaskDocument = gql`
       __typename
       id
       title
-      course
+      course {
+        id
+        courseName
+      }
       description
       due
       completed

@@ -1,0 +1,15 @@
+query Courses {
+  getCourses {
+    id
+    courseName
+    tasks{
+      id
+      title
+      course {
+        id
+        courseName
+      }
+      due
+    }
+  }
+}

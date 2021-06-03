@@ -1,19 +1,33 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import styles from "./dropdown.module.css";
 
 interface DropdownProps {
-  className: string;
+  className?: string;
   value: string;
 }
 
 export const Dropdown: FC<DropdownProps> = ({ className, value, children }) => {
   const [dropdownActive, setDropdownActive] = useState(false);
+
+  useEffect(() => {
+    const pageClickEvent = (e: MouseEvent) => {
+      setDropdownActive(false);
+    };
+
+    if (dropdownActive) {
+      window.addEventListener("click", pageClickEvent);
+    }
+
+    return () => {
+      window.removeEventListener("click", pageClickEvent);
+    };
+  }, [dropdownActive]);
   return (
     <div className={className}>
       <button
-        className={styles.datePickerBtn}
+        className={styles.dropdownBtn}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();

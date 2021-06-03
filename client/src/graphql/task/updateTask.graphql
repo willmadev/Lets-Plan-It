@@ -4,7 +4,10 @@ mutation UpdateTask($input: UpdateTaskInput!){
       __typename
       id
       title
-      course
+      course {
+        id
+        courseName
+      }
       description
       due
       completed

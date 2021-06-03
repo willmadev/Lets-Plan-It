@@ -1,0 +1,18 @@
+mutation UpdateCourse($input: UpdateCourseInput!) {
+  updateCourse(input: $input) {
+    ... on Course {
+      __typename
+      id
+      courseName
+      tasks {
+        id
+        title
+      }
+    }
+    ... on MutateCourseError {
+      __typename
+      field
+      message
+    }
+  }
+}

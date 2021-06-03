@@ -23,8 +23,8 @@ class CreateTaskInput {
   @Field()
   title: string;
 
-  @Field()
-  course: string;
+  @Field(() => ID)
+  course: number;
 
   @Field({ nullable: true })
   description: string;

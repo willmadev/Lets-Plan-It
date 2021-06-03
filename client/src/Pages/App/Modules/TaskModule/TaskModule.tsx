@@ -1,114 +1,20 @@
-import { FetchResult } from "@apollo/client";
+// import { FetchResult } from "@apollo/client";
 import { FC, useState } from "react";
 import {
-  CreateTaskMutation,
+  // CreateTaskMutation,
   Task,
   useGetTasksQuery,
-  useCreateTaskMutation,
-  GetTasksDocument,
+  // useCreateTaskMutation,
+  // GetTasksDocument,
   useUpdateTaskMutation,
+  // useCoursesQuery,
 } from "src/generated/graphql";
 import { formatDate } from "src/helpers/formatDate";
 // import { sortByDueDate } from "src/helpers/sortByDueDate";
-import DatePicker from "../DatePicker";
+// import DatePicker from "../DatePicker";
+import { NewTask } from "./NewTask";
 
 import styles from "./taskModule.module.css";
-
-const NewTask: FC = () => {
-  const [newTask, setNewTask] = useState({
-    title: "",
-    date: new Date(),
-  });
-
-  const handleTaskInputChange = (field: string, value: any) => {
-    setNewTask({ ...newTask, [field]: value });
-  };
-
-  const [createTask] = useCreateTaskMutation({
-    // update cache to add newly created task
-    update: (cache, { data }) => {
-      if (!data) {
-        return;
-      }
-
-      if (data.createTask.__typename === "MutateTaskError") {
-        return;
-      }
-
-      // const { getTasks } = cache.readQuery({
-      //   query: GetTasksDocument,
-      // }) ?? { getTask: null };
-
-      // const newCache = [...getTasks, data?.createTask];
-
-      // add completed field
-      let completedFieldData = data.createTask;
-      cache.writeQuery({
-        query: GetTasksDocument,
-        data: { getTasks: [completedFieldData] },
-      });
-
-      console.log("new cache", completedFieldData);
-    },
-  });
-  const submitTask = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    // input validation
-
-    let response: FetchResult<
-      CreateTaskMutation,
-      Record<string, any>,
-      Record<string, any>
-    >;
-    try {
-      response = await createTask({
-        variables: {
-          input: {
-            course: "test course",
-            due: newTask.date,
-            title: newTask.title,
-          },
-        },
-        // refetchQueries: [{ query: GetTasksDocument }],
-      });
-      console.log("create task response:", response);
-    } catch (err) {
-      console.error("create task error:", err);
-    }
-  };
-
-  return (
-    <form
-      name="new-task"
-      className={styles.newTask_container}
-      onSubmit={(e) => submitTask(e)}
-    >
-      <input
-        name="title"
-        className={styles.newTask_titleInput}
-        placeholder="Create new task"
-        onChange={(e) => {
-          handleTaskInputChange(e.target.name, e.target.value);
-        }}
-        value={newTask.title}
-      />
-      <DatePicker
-        className={styles.newTask_datePicker}
-        date={newTask.date}
-        onChange={(date: Date) => {
-          handleTaskInputChange("date", date);
-        }}
-      />
-      <input
-        name="submit"
-        className={styles.newTask_submit}
-        type="submit"
-        value="Add Task"
-      />
-    </form>
-  );
-};
 
 interface TaskItemProps {
   task: Task;

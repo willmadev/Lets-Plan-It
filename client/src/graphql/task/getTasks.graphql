@@ -2,7 +2,10 @@ query GetTasks($cursor: ID, $filter: TaskFilterInput, $limit: Int) {
   getTasks(cursor: $cursor, filter: $filter, limit: $limit) {
     id
     title
-    course
+    course {
+      id
+      courseName
+    }
     completed
     description
     due

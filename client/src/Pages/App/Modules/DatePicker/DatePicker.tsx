@@ -182,26 +182,6 @@ const TimePicker: React.FC<TimePickerProps> = ({ date, setDate }) => {
   );
 };
 
-// const Dropdown: React.FC<DropdownProps> = ({ date, setDate }) => {
-//   return (
-//     <div className={styles.dropdown} onClick={(e) => e.stopPropagation()}>
-//       <Calendar
-//         className={styles.calendar}
-//         returnValue="start"
-//         calendarType="US"
-//         onChange={(newDate) => {
-//           setDate(
-//             // @ts-ignore
-//             set(newDate, { hours: getHours(date), minutes: getMinutes(date) })
-//           );
-//         }}
-//         value={date}
-//       />
-//       <TimePicker setDate={setDate} date={date} />
-//     </div>
-//   );
-// };
-
 interface DatePickerProps {
   className: string;
   date: Date;
@@ -215,21 +195,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
 }) => {
   // const [date, setDate] = useState(new Date());
   const [formattedDate, setFormattedDate] = useState("");
-  const [dropdownActive, setDropdownActive] = useState(false);
-
-  useEffect(() => {
-    const pageClickEvent = (e: MouseEvent) => {
-      setDropdownActive(false);
-    };
-
-    if (dropdownActive) {
-      window.addEventListener("click", pageClickEvent);
-    }
-
-    return () => {
-      window.removeEventListener("click", pageClickEvent);
-    };
-  }, [dropdownActive]);
 
   useEffect(() => {
     setFormattedDate(formatDate(date) || "error");
@@ -242,9 +207,11 @@ const DatePicker: React.FC<DatePickerProps> = ({
         returnValue="start"
         calendarType="US"
         onChange={(newDate) => {
-          setFormattedDate(
-            // @ts-ignore
-            set(newDate, { hours: getHours(date), minutes: getMinutes(date) })
+          onChange(
+            set(newDate as Date, {
+              hours: getHours(date),
+              minutes: getMinutes(date),
+            })
           );
         }}
         value={date}

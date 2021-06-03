@@ -7,37 +7,6 @@
   align-items: center;
 }
 
-.newTask_container {
-  margin-top: 25px;
-  width: 85%;
-  display: grid;
-  grid-template-columns: min-content min-content auto min-content;
-  grid-template-rows: min-content min-content;
-  row-gap: 5px;
-}
-
-.newTask_titleInput {
-  font-family: lato, sans-serif;
-  font-size: 1rem;
-  padding: 1px 10px;
-  grid-row: 1;
-  grid-column: 1 / 5;
-  width: calc(100% - 20px);
-  height: 2rem;
-  border: 1px solid black;
-  border-radius: 20px;
-}
-
-.newTask_datePicker {
-  grid-row: 2;
-  grid-column: 1;
-}
-
-.newTask_submit {
-  grid-row: 2;
-  grid-column: 4;
-}
-
 .taskList {
   display: flex;
   flex-direction: column;

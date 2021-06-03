@@ -2,7 +2,10 @@ query SingleTask {
   getSingleTask(id: 10) {
     id
     title
-    course
+    course {
+      id
+      courseName
+    }
     completed
     description
     due
