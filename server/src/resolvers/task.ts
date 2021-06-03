@@ -41,7 +41,7 @@ class UpdateTaskInput {
   @Field({ nullable: true })
   title?: string;
 
-  @Field({ nullable: true })
+  @Field(() => ID, { nullable: true })
   course?: string;
 
   @Field({ nullable: true })
@@ -94,16 +94,17 @@ export class TaskResolver {
       const qb = getConnection()
         .getRepository(Task)
         .createQueryBuilder("task")
-        .orderBy("due", "ASC")
+        .orderBy("task.due", "ASC")
         .take(realLimit)
-        .where('"userId" = :userId', { userId: user.id });
+        .where('"task"."userId" = :userId', { userId: user.id })
+        .leftJoinAndSelect("task.course", "course");
 
       if (cursor) {
         const cursorTask = await Task.findOne(cursor);
         if (!cursorTask) {
           throw new Error("Cursor not valid");
         }
-        qb.andWhere("due > :cursor", { cursor: cursorTask.due });
+        qb.andWhere('"task"."due" > :cursor', { cursor: cursorTask.due });
       }
 
       if (filter?.completed !== undefined) {
@@ -111,10 +112,11 @@ export class TaskResolver {
       }
 
       const tasks = await qb.getMany();
+      console.log(tasks);
       return tasks;
     } catch (err) {
       console.error(err);
-      throw new Error();
+      throw new Error("An error occured");
     }
   }
 

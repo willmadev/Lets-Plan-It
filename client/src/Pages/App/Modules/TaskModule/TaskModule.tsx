@@ -49,7 +49,7 @@ const TaskItem: FC<TaskItemProps> = ({ task }) => {
         onChange={(e) => completeTask()}
       />
       <p className={styles.taskItem_title}>{task.title}</p>
-      <p className={styles.taskItem_course}>{task.id}</p>
+      <p className={styles.taskItem_course}>{task.course.courseName}</p>
       <p className={styles.taskItem_due}>
         {formatDate(new Date(parseInt(task.due))) ?? task.due}
       </p>
