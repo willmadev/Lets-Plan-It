@@ -15,7 +15,12 @@ import { getAccessToken, setAccessToken } from "./accessToken";
 
 import "./index.css";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretDown,
+  faCaretUp,
+  faInfoCircle,
+  faCheckCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { sortByDueDate } from "./helpers/sortByDueDate";
 
 const httpLink = createHttpLink({
@@ -199,7 +204,7 @@ const client = new ApolloClient({
 });
 
 // fontawesome
-library.add(faCaretDown, faCaretUp);
+library.add(faCaretDown, faCaretUp, faInfoCircle, faCheckCircle);
 
 ReactDOM.render(
   <ApolloProvider client={client}>

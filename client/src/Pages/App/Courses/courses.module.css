@@ -1,0 +1,49 @@
+.coursesContainer {
+  padding: 50px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 50px;
+}
+
+.courseCard_container {
+  display: grid;
+  grid-template-rows: min-content min-content auto min-content;
+  background-color: white;
+  width: 300px;
+  height: 170px;
+  border-radius: 20px;
+}
+
+.courseCard_banner {
+  grid-row: 1;
+  width: 100%;
+  height: 30px;
+  background-color: blue;
+  border-radius: 20px 20px 0px 0px;
+}
+
+.courseCard_title {
+  grid-row: 2;
+  font-size: 1.5rem;
+  padding: 10px;
+}
+
+.courseCard_notificationContainer {
+  grid-row: 4;
+  display: flex;
+  gap: 15px;
+  padding: 10px;
+}
+
+.courseCard_notificationWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.courseCard_notificationWrapper > p {
+  padding: 5px;
+}
+
+.courseCard_notificationIcon {
+  font-size: 1.2rem;
+}
