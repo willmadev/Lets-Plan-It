@@ -6,14 +6,22 @@ import {
   createUnionType,
   Ctx,
   Field,
+  FieldResolver,
   ID,
   InputType,
+  Int,
   Mutation,
   ObjectType,
   Query,
   Resolver,
+  ResolverInterface,
+  Root,
   UseMiddleware,
 } from "type-graphql";
+import { getTasks } from "../helpers/tasks";
+import { TaskFilterInput } from "./task";
+import { Task } from "../entity/Task";
+import { getConnection } from "typeorm";
 
 @InputType()
 class CreateCourseInput {
@@ -49,8 +57,8 @@ const MutateCourseResult = createUnionType({
   types: () => [Course, MutateCourseError] as const,
 });
 
-@Resolver()
-export class CourseResolver {
+@Resolver(() => Course)
+export class CourseResolver implements ResolverInterface<Course> {
   @UseMiddleware(isAuth)
   @Query(() => [Course], { nullable: true })
   async getCourses(@Ctx() { user }: MyContext): Promise<Course[]> {
@@ -133,5 +141,45 @@ export class CourseResolver {
     }
 
     return true;
+  }
+
+  @UseMiddleware(isAuth)
+  @FieldResolver(() => [Task])
+  async tasks(
+    @Root() course: Course,
+    @Ctx() { user }: MyContext,
+    @Arg("limit", () => Int, { defaultValue: 50 }) limit: number,
+    @Arg("cursor", () => ID, { nullable: true }) cursor: number,
+    @Arg("filter", () => TaskFilterInput, { nullable: true })
+    filter: TaskFilterInput
+  ) {
+    return await getTasks({
+      user,
+      limit,
+      cursor,
+      filter: { completed: filter?.completed, course: course.id },
+    });
+  }
+
+  @FieldResolver()
+  async taskCount(
+    @Root() course: Course,
+    @Ctx() { user }: MyContext,
+    @Arg("filter", () => TaskFilterInput, { nullable: true })
+    filter: TaskFilterInput
+  ) {
+    // return await Task.count({ where: { user, completed: filter, course } });
+    const qb = getConnection()
+      .getRepository(Task)
+      .createQueryBuilder("task")
+      .where('"task"."course" = :course', { course })
+      .andWhere('"task"."userId" = :userId', { userId: user.id });
+
+    if (filter?.completed !== undefined) {
+      qb.andWhere("completed = :completed", { completed: filter.completed });
+    }
+
+    const taskCount = qb.getCount();
+    return taskCount;
   }
 }

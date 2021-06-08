@@ -15,8 +15,8 @@ import {
 import { Task } from "../entity/Task";
 import { isAuth } from "../middlewares/isAuth";
 import { MyContext } from "../helpers/types";
-import { getConnection } from "typeorm";
 import { Course } from "../entity/Course";
+import { getTasks } from "../helpers/tasks";
 
 @InputType()
 class CreateTaskInput {
@@ -73,9 +73,12 @@ class MutateTaskError {
 }
 
 @InputType()
-class TaskFilterInput {
-  @Field()
-  completed: boolean;
+export class TaskFilterInput {
+  @Field({ nullable: true })
+  completed?: boolean;
+
+  @Field(() => ID, { nullable: true })
+  course: number;
 }
 
 @Resolver()
@@ -89,35 +92,7 @@ export class TaskResolver {
     @Arg("filter", () => TaskFilterInput, { nullable: true })
     filter: TaskFilterInput
   ): Promise<Array<Task> | undefined> {
-    try {
-      const realLimit = Math.min(50, limit);
-      const qb = getConnection()
-        .getRepository(Task)
-        .createQueryBuilder("task")
-        .orderBy("task.due", "ASC")
-        .take(realLimit)
-        .where('"task"."userId" = :userId', { userId: user.id })
-        .leftJoinAndSelect("task.course", "course");
-
-      if (cursor) {
-        const cursorTask = await Task.findOne(cursor);
-        if (!cursorTask) {
-          throw new Error("Cursor not valid");
-        }
-        qb.andWhere('"task"."due" > :cursor', { cursor: cursorTask.due });
-      }
-
-      if (filter?.completed !== undefined) {
-        qb.andWhere("completed = :completed", { completed: filter.completed });
-      }
-
-      const tasks = await qb.getMany();
-      console.log(tasks);
-      return tasks;
-    } catch (err) {
-      console.error(err);
-      throw new Error("An error occured");
-    }
+    return await getTasks({ user, limit, cursor, filter });
   }
 
   @UseMiddleware(isAuth)
