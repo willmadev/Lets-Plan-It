@@ -8,6 +8,7 @@ mutation UpdateCourse($input: UpdateCourseInput!) {
         id
         title
       }
+      taskCount
     }
     ... on MutateCourseError {
       __typename

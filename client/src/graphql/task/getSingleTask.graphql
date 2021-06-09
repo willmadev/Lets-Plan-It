@@ -5,6 +5,7 @@ query SingleTask {
     course {
       id
       courseName
+      taskCount
     }
     completed
     description

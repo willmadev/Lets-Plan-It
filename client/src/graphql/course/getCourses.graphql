@@ -8,8 +8,10 @@ query Courses {
       course {
         id
         courseName
+        taskCount
       }
       due
     }
+    taskCount
   }
 }

@@ -7,6 +7,7 @@ mutation CreateTask ($input: CreateTaskInput!){
       course {
         id
         courseName
+        taskCount
       }
       description
       due

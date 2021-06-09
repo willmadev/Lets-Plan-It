@@ -5,6 +5,7 @@ query GetTasks($cursor: ID, $filter: TaskFilterInput, $limit: Int) {
     course {
       id
       courseName
+      taskCount
     }
     completed
     description

@@ -6,5 +6,6 @@ query SingleCourse ($id:ID!) {
       id
       title
     }
+    taskCount
   }
 }

@@ -172,14 +172,15 @@ export class CourseResolver implements ResolverInterface<Course> {
     const qb = getConnection()
       .getRepository(Task)
       .createQueryBuilder("task")
-      .where('"task"."course" = :course', { course })
+      .where('"task"."courseId" = :courseId', { courseId: course.id })
       .andWhere('"task"."userId" = :userId', { userId: user.id });
 
     if (filter?.completed !== undefined) {
       qb.andWhere("completed = :completed", { completed: filter.completed });
     }
 
-    const taskCount = qb.getCount();
+    const taskCount = await qb.getCount();
+    console.log("taskCount: ", taskCount);
     return taskCount;
   }
 }
