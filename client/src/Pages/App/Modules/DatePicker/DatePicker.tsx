@@ -24,7 +24,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ date, setDate }) => {
 
   useEffect(() => {
     inputRef.current?.setSelectionRange(cursorPosition, cursorPosition);
-  });
+  }, [cursorPosition]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -166,6 +166,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ date, setDate }) => {
     }
 
     setDate(newDate);
+    console.log(format(date, "hh:mm aa"));
     setCursorPosition(newPosition);
   };
 
@@ -216,7 +217,12 @@ const DatePicker: React.FC<DatePickerProps> = ({
         }}
         value={date}
       />
-      <TimePicker setDate={setFormattedDate} date={date} />
+      <TimePicker
+        setDate={(newDate: Date) => {
+          onChange(newDate);
+        }}
+        date={date}
+      />
     </Dropdown>
   );
 };
