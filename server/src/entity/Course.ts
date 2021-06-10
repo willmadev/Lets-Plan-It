@@ -21,6 +21,10 @@ export class Course extends BaseEntity {
   @Column()
   courseName!: string;
 
+  @Field()
+  @Column()
+  color: string;
+
   @Field(() => [Task], { nullable: true })
   @OneToMany(() => Task, (task) => task.user, { nullable: true })
   tasks: Task[];

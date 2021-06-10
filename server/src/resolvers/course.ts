@@ -27,6 +27,9 @@ import { getConnection } from "typeorm";
 class CreateCourseInput {
   @Field()
   courseName: string;
+
+  @Field()
+  color: string;
 }
 
 @InputType()
@@ -36,6 +39,9 @@ class UpdateCourseInput {
 
   @Field({ nullable: true })
   courseName?: string;
+
+  @Field({ nullable: true })
+  color?: string;
 }
 
 @ObjectType()
@@ -86,6 +92,7 @@ export class CourseResolver implements ResolverInterface<Course> {
 
     const course = Course.create({
       courseName: input.courseName,
+      color: input.color,
       user,
     });
 
@@ -118,6 +125,7 @@ export class CourseResolver implements ResolverInterface<Course> {
     }
 
     if (input.courseName) course.courseName = input.courseName;
+    if (input.color) course.color = input.color;
 
     await Course.save(course);
     return course;

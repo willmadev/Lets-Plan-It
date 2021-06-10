@@ -2,16 +2,20 @@ import { FC } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import styles from "./courses.module.css";
-import { Course, useCoursesQuery } from "src/generated/graphql";
+import { Course, useGetCoursesQuery } from "src/generated/graphql";
 
 interface CourseCardProps {
   course: Course;
 }
 
 export const CourseCard: FC<CourseCardProps> = ({ course }) => {
+  console.log(course);
   return (
     <div className={styles.courseCard_container}>
-      <div className={styles.courseCard_banner} />
+      <div
+        className={styles.courseCard_banner}
+        style={{ backgroundColor: `#${course.color}` }}
+      />
       <h2 className={styles.courseCard_title}>{course.courseName}</h2>
       <div className={styles.courseCard_notificationContainer}>
         <div className={styles.courseCard_notificationWrapper}>
@@ -34,7 +38,7 @@ export const CourseCard: FC<CourseCardProps> = ({ course }) => {
 };
 
 const CourseContainer: FC = () => {
-  const { data, loading, error } = useCoursesQuery();
+  const { data, loading, error } = useGetCoursesQuery();
 
   if (loading) {
     return <p>Loading...</p>;
@@ -50,7 +54,7 @@ const CourseContainer: FC = () => {
 
   return (
     <div className={styles.coursesContainer}>
-      {data?.getCourses?.map((course: Course) => (
+      {data?.getCourses?.map((course) => (
         <CourseCard course={course} key={course.id} />
       ))}
     </div>
