@@ -1,0 +1,54 @@
+mutation CreateTask($input: CreateTaskInput!) {
+  createTask(input: $input) {
+    ...MutateTaskFragment
+  }
+}
+
+mutation UpdateTask($input: UpdateTaskInput!) {
+  updateTask(input: $input) {
+    ...MutateTaskFragment
+  }
+}
+
+mutation DeleteTask($id: ID!) {
+  deleteTask(id: $id)
+}
+
+query GetTasks($filter: TaskFilterInput!, $cursor: ID, $limit: Int) {
+  getTasks(filter: $filter, cursor: $cursor, limit: $limit) {
+    ...TaskFragment
+  }
+}
+
+query GetSingleTask($id: ID!) {
+  getSingleTask(id: $id) {
+    ...TaskFragment
+  }
+}
+
+fragment MutateTaskFragment on MutateTaskResult {
+  ... on Task {
+    ...TaskFragment
+  }
+
+  ... on MutateTaskError {
+    __typename
+    field
+    message
+  }
+}
+
+fragment TaskFragment on Task {
+  __typename
+  id
+  title
+  course {
+    id
+    courseName
+    color
+    taskCount
+  }
+  description
+  due
+  completed
+}

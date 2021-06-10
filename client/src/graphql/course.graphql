@@ -1,0 +1,61 @@
+mutation CreateCourse($input: CreateCourseInput!) {
+  createCourse(input: $input) {
+    ...MutateCourseFragment
+  }
+}
+
+mutation UpdateCourse($input: UpdateCourseInput!) {
+  updateCourse(input: $input) {
+    ...MutateCourseFragment
+  }
+}
+
+mutation DeleteCourse($id: ID!) {
+  deleteCourse(id: $id)
+}
+
+query GetCourses {
+  getCourses {
+    ...CourseFragment
+  }
+}
+
+query GetSingleCourse($id: ID!) {
+  getSingleCourse(id: $id) {
+    ...CourseFragment
+  }
+}
+
+fragment MutateCourseFragment on MutateCourseResult {
+  ... on Course {
+    ...CourseFragment
+  }
+
+  ... on MutateCourseError {
+    __typename
+    field
+    message
+  }
+}
+
+fragment CourseFragment on Course {
+  __typename
+  id
+  courseName
+  color
+  taskCount
+  tasks {
+    __typename
+    id
+    title
+    description
+    completed
+    due
+    course {
+      id
+      courseName
+      color
+      taskCount
+    }
+  }
+}

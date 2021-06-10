@@ -1,3 +1,0 @@
-mutation DeleteCourse ($id: ID!) {
-  deleteCourse(id:$id)
-}

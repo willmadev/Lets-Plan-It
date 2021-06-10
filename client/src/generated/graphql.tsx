@@ -36,6 +36,7 @@ export type Course = {
   __typename?: 'Course';
   id: Scalars['ID'];
   courseName: Scalars['String'];
+  color: Scalars['String'];
   tasks?: Maybe<Array<Task>>;
   taskCount: Scalars['Int'];
 };
@@ -54,6 +55,7 @@ export type CourseTaskCountArgs = {
 
 export type CreateCourseInput = {
   courseName: Scalars['String'];
+  color: Scalars['String'];
 };
 
 export type CreateTaskInput = {
@@ -188,6 +190,7 @@ export type TaskFilterInput = {
 export type UpdateCourseInput = {
   id: Scalars['ID'];
   courseName?: Maybe<Scalars['String']>;
+  color?: Maybe<Scalars['String']>;
 };
 
 export type UpdateTaskInput = {
@@ -247,15 +250,27 @@ export type CreateCourseMutationVariables = Exact<{
 export type CreateCourseMutation = (
   { __typename?: 'Mutation' }
   & { createCourse: (
-    { __typename: 'Course' }
-    & Pick<Course, 'id' | 'courseName' | 'taskCount'>
-    & { tasks?: Maybe<Array<(
-      { __typename?: 'Task' }
-      & Pick<Task, 'id' | 'title'>
-    )>> }
+    { __typename?: 'Course' }
+    & MutateCourseFragment_Course_Fragment
   ) | (
-    { __typename: 'MutateCourseError' }
-    & Pick<MutateCourseError, 'field' | 'message'>
+    { __typename?: 'MutateCourseError' }
+    & MutateCourseFragment_MutateCourseError_Fragment
+  ) }
+);
+
+export type UpdateCourseMutationVariables = Exact<{
+  input: UpdateCourseInput;
+}>;
+
+
+export type UpdateCourseMutation = (
+  { __typename?: 'Mutation' }
+  & { updateCourse: (
+    { __typename?: 'Course' }
+    & MutateCourseFragment_Course_Fragment
+  ) | (
+    { __typename?: 'MutateCourseError' }
+    & MutateCourseFragment_MutateCourseError_Fragment
   ) }
 );
 
@@ -269,60 +284,53 @@ export type DeleteCourseMutation = (
   & Pick<Mutation, 'deleteCourse'>
 );
 
-export type CoursesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetCoursesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CoursesQuery = (
+export type GetCoursesQuery = (
   { __typename?: 'Query' }
   & { getCourses?: Maybe<Array<(
     { __typename?: 'Course' }
-    & Pick<Course, 'id' | 'courseName' | 'taskCount'>
-    & { tasks?: Maybe<Array<(
-      { __typename?: 'Task' }
-      & Pick<Task, 'id' | 'title' | 'due'>
-      & { course: (
-        { __typename?: 'Course' }
-        & Pick<Course, 'id' | 'courseName' | 'taskCount'>
-      ) }
-    )>> }
+    & CourseFragmentFragment
   )>> }
 );
 
-export type SingleCourseQueryVariables = Exact<{
+export type GetSingleCourseQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type SingleCourseQuery = (
+export type GetSingleCourseQuery = (
   { __typename?: 'Query' }
   & { getSingleCourse?: Maybe<(
     { __typename?: 'Course' }
-    & Pick<Course, 'id' | 'courseName' | 'taskCount'>
-    & { tasks?: Maybe<Array<(
-      { __typename?: 'Task' }
-      & Pick<Task, 'id' | 'title'>
-    )>> }
+    & CourseFragmentFragment
   )> }
 );
 
-export type UpdateCourseMutationVariables = Exact<{
-  input: UpdateCourseInput;
-}>;
+type MutateCourseFragment_Course_Fragment = (
+  { __typename?: 'Course' }
+  & CourseFragmentFragment
+);
 
+type MutateCourseFragment_MutateCourseError_Fragment = (
+  { __typename: 'MutateCourseError' }
+  & Pick<MutateCourseError, 'field' | 'message'>
+);
 
-export type UpdateCourseMutation = (
-  { __typename?: 'Mutation' }
-  & { updateCourse: (
-    { __typename: 'Course' }
-    & Pick<Course, 'id' | 'courseName' | 'taskCount'>
-    & { tasks?: Maybe<Array<(
-      { __typename?: 'Task' }
-      & Pick<Task, 'id' | 'title'>
-    )>> }
-  ) | (
-    { __typename: 'MutateCourseError' }
-    & Pick<MutateCourseError, 'field' | 'message'>
-  ) }
+export type MutateCourseFragmentFragment = MutateCourseFragment_Course_Fragment | MutateCourseFragment_MutateCourseError_Fragment;
+
+export type CourseFragmentFragment = (
+  { __typename: 'Course' }
+  & Pick<Course, 'id' | 'courseName' | 'color' | 'taskCount'>
+  & { tasks?: Maybe<Array<(
+    { __typename: 'Task' }
+    & Pick<Task, 'id' | 'title' | 'description' | 'completed' | 'due'>
+    & { course: (
+      { __typename?: 'Course' }
+      & Pick<Course, 'id' | 'courseName' | 'color' | 'taskCount'>
+    ) }
+  )>> }
 );
 
 export type CreateTaskMutationVariables = Exact<{
@@ -333,15 +341,27 @@ export type CreateTaskMutationVariables = Exact<{
 export type CreateTaskMutation = (
   { __typename?: 'Mutation' }
   & { createTask: (
-    { __typename: 'Task' }
-    & Pick<Task, 'id' | 'title' | 'description' | 'due' | 'completed'>
-    & { course: (
-      { __typename?: 'Course' }
-      & Pick<Course, 'id' | 'courseName' | 'taskCount'>
-    ) }
+    { __typename?: 'Task' }
+    & MutateTaskFragment_Task_Fragment
   ) | (
-    { __typename: 'MutateTaskError' }
-    & Pick<MutateTaskError, 'field' | 'message'>
+    { __typename?: 'MutateTaskError' }
+    & MutateTaskFragment_MutateTaskError_Fragment
+  ) }
+);
+
+export type UpdateTaskMutationVariables = Exact<{
+  input: UpdateTaskInput;
+}>;
+
+
+export type UpdateTaskMutation = (
+  { __typename?: 'Mutation' }
+  & { updateTask: (
+    { __typename?: 'Task' }
+    & MutateTaskFragment_Task_Fragment
+  ) | (
+    { __typename?: 'MutateTaskError' }
+    & MutateTaskFragment_MutateTaskError_Fragment
   ) }
 );
 
@@ -355,24 +375,9 @@ export type DeleteTaskMutation = (
   & Pick<Mutation, 'deleteTask'>
 );
 
-export type SingleTaskQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type SingleTaskQuery = (
-  { __typename?: 'Query' }
-  & { getSingleTask?: Maybe<(
-    { __typename?: 'Task' }
-    & Pick<Task, 'id' | 'title' | 'completed' | 'description' | 'due'>
-    & { course: (
-      { __typename?: 'Course' }
-      & Pick<Course, 'id' | 'courseName' | 'taskCount'>
-    ) }
-  )> }
-);
-
 export type GetTasksQueryVariables = Exact<{
+  filter: TaskFilterInput;
   cursor?: Maybe<Scalars['ID']>;
-  filter?: Maybe<TaskFilterInput>;
   limit?: Maybe<Scalars['Int']>;
 }>;
 
@@ -381,31 +386,41 @@ export type GetTasksQuery = (
   { __typename?: 'Query' }
   & { getTasks: Array<(
     { __typename?: 'Task' }
-    & Pick<Task, 'id' | 'title' | 'completed' | 'description' | 'due'>
-    & { course: (
-      { __typename?: 'Course' }
-      & Pick<Course, 'id' | 'courseName' | 'taskCount'>
-    ) }
+    & TaskFragmentFragment
   )> }
 );
 
-export type UpdateTaskMutationVariables = Exact<{
-  input: UpdateTaskInput;
+export type GetSingleTaskQueryVariables = Exact<{
+  id: Scalars['ID'];
 }>;
 
 
-export type UpdateTaskMutation = (
-  { __typename?: 'Mutation' }
-  & { updateTask: (
-    { __typename: 'Task' }
-    & Pick<Task, 'id' | 'title' | 'description' | 'due' | 'completed'>
-    & { course: (
-      { __typename?: 'Course' }
-      & Pick<Course, 'id' | 'courseName' | 'taskCount'>
-    ) }
-  ) | (
-    { __typename: 'MutateTaskError' }
-    & Pick<MutateTaskError, 'field' | 'message'>
+export type GetSingleTaskQuery = (
+  { __typename?: 'Query' }
+  & { getSingleTask?: Maybe<(
+    { __typename?: 'Task' }
+    & TaskFragmentFragment
+  )> }
+);
+
+type MutateTaskFragment_Task_Fragment = (
+  { __typename?: 'Task' }
+  & TaskFragmentFragment
+);
+
+type MutateTaskFragment_MutateTaskError_Fragment = (
+  { __typename: 'MutateTaskError' }
+  & Pick<MutateTaskError, 'field' | 'message'>
+);
+
+export type MutateTaskFragmentFragment = MutateTaskFragment_Task_Fragment | MutateTaskFragment_MutateTaskError_Fragment;
+
+export type TaskFragmentFragment = (
+  { __typename: 'Task' }
+  & Pick<Task, 'id' | 'title' | 'description' | 'due' | 'completed'>
+  & { course: (
+    { __typename?: 'Course' }
+    & Pick<Course, 'id' | 'courseName' | 'color' | 'taskCount'>
   ) }
 );
 
@@ -417,7 +432,69 @@ export type TestQuery = (
   & Pick<Query, 'hello'>
 );
 
-
+export const CourseFragmentFragmentDoc = gql`
+    fragment CourseFragment on Course {
+  __typename
+  id
+  courseName
+  color
+  taskCount
+  tasks {
+    __typename
+    id
+    title
+    description
+    completed
+    due
+    course {
+      id
+      courseName
+      color
+      taskCount
+    }
+  }
+}
+    `;
+export const MutateCourseFragmentFragmentDoc = gql`
+    fragment MutateCourseFragment on MutateCourseResult {
+  ... on Course {
+    ...CourseFragment
+  }
+  ... on MutateCourseError {
+    __typename
+    field
+    message
+  }
+}
+    ${CourseFragmentFragmentDoc}`;
+export const TaskFragmentFragmentDoc = gql`
+    fragment TaskFragment on Task {
+  __typename
+  id
+  title
+  course {
+    id
+    courseName
+    color
+    taskCount
+  }
+  description
+  due
+  completed
+}
+    `;
+export const MutateTaskFragmentFragmentDoc = gql`
+    fragment MutateTaskFragment on MutateTaskResult {
+  ... on Task {
+    ...TaskFragment
+  }
+  ... on MutateTaskError {
+    __typename
+    field
+    message
+  }
+}
+    ${TaskFragmentFragmentDoc}`;
 export const LoginDocument = gql`
     mutation Login($input: LoginInput!) {
   login(input: $input) {
@@ -537,24 +614,10 @@ export type TestAuthQueryResult = Apollo.QueryResult<TestAuthQuery, TestAuthQuer
 export const CreateCourseDocument = gql`
     mutation CreateCourse($input: CreateCourseInput!) {
   createCourse(input: $input) {
-    ... on Course {
-      __typename
-      id
-      courseName
-      tasks {
-        id
-        title
-      }
-      taskCount
-    }
-    ... on MutateCourseError {
-      __typename
-      field
-      message
-    }
+    ...MutateCourseFragment
   }
 }
-    `;
+    ${MutateCourseFragmentFragmentDoc}`;
 export type CreateCourseMutationFn = Apollo.MutationFunction<CreateCourseMutation, CreateCourseMutationVariables>;
 
 /**
@@ -581,6 +644,39 @@ export function useCreateCourseMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateCourseMutationHookResult = ReturnType<typeof useCreateCourseMutation>;
 export type CreateCourseMutationResult = Apollo.MutationResult<CreateCourseMutation>;
 export type CreateCourseMutationOptions = Apollo.BaseMutationOptions<CreateCourseMutation, CreateCourseMutationVariables>;
+export const UpdateCourseDocument = gql`
+    mutation UpdateCourse($input: UpdateCourseInput!) {
+  updateCourse(input: $input) {
+    ...MutateCourseFragment
+  }
+}
+    ${MutateCourseFragmentFragmentDoc}`;
+export type UpdateCourseMutationFn = Apollo.MutationFunction<UpdateCourseMutation, UpdateCourseMutationVariables>;
+
+/**
+ * __useUpdateCourseMutation__
+ *
+ * To run a mutation, you first call `useUpdateCourseMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCourseMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCourseMutation, { data, loading, error }] = useUpdateCourseMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCourseMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCourseMutation, UpdateCourseMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCourseMutation, UpdateCourseMutationVariables>(UpdateCourseDocument, options);
+      }
+export type UpdateCourseMutationHookResult = ReturnType<typeof useUpdateCourseMutation>;
+export type UpdateCourseMutationResult = Apollo.MutationResult<UpdateCourseMutation>;
+export type UpdateCourseMutationOptions = Apollo.BaseMutationOptions<UpdateCourseMutation, UpdateCourseMutationVariables>;
 export const DeleteCourseDocument = gql`
     mutation DeleteCourse($id: ID!) {
   deleteCourse(id: $id)
@@ -612,164 +708,82 @@ export function useDeleteCourseMutation(baseOptions?: Apollo.MutationHookOptions
 export type DeleteCourseMutationHookResult = ReturnType<typeof useDeleteCourseMutation>;
 export type DeleteCourseMutationResult = Apollo.MutationResult<DeleteCourseMutation>;
 export type DeleteCourseMutationOptions = Apollo.BaseMutationOptions<DeleteCourseMutation, DeleteCourseMutationVariables>;
-export const CoursesDocument = gql`
-    query Courses {
+export const GetCoursesDocument = gql`
+    query GetCourses {
   getCourses {
-    id
-    courseName
-    tasks {
-      id
-      title
-      course {
-        id
-        courseName
-        taskCount
-      }
-      due
-    }
-    taskCount
+    ...CourseFragment
   }
 }
-    `;
+    ${CourseFragmentFragmentDoc}`;
 
 /**
- * __useCoursesQuery__
+ * __useGetCoursesQuery__
  *
- * To run a query within a React component, call `useCoursesQuery` and pass it any options that fit your needs.
- * When your component renders, `useCoursesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetCoursesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCoursesQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useCoursesQuery({
+ * const { data, loading, error } = useGetCoursesQuery({
  *   variables: {
  *   },
  * });
  */
-export function useCoursesQuery(baseOptions?: Apollo.QueryHookOptions<CoursesQuery, CoursesQueryVariables>) {
+export function useGetCoursesQuery(baseOptions?: Apollo.QueryHookOptions<GetCoursesQuery, GetCoursesQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<CoursesQuery, CoursesQueryVariables>(CoursesDocument, options);
+        return Apollo.useQuery<GetCoursesQuery, GetCoursesQueryVariables>(GetCoursesDocument, options);
       }
-export function useCoursesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CoursesQuery, CoursesQueryVariables>) {
+export function useGetCoursesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCoursesQuery, GetCoursesQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<CoursesQuery, CoursesQueryVariables>(CoursesDocument, options);
+          return Apollo.useLazyQuery<GetCoursesQuery, GetCoursesQueryVariables>(GetCoursesDocument, options);
         }
-export type CoursesQueryHookResult = ReturnType<typeof useCoursesQuery>;
-export type CoursesLazyQueryHookResult = ReturnType<typeof useCoursesLazyQuery>;
-export type CoursesQueryResult = Apollo.QueryResult<CoursesQuery, CoursesQueryVariables>;
-export const SingleCourseDocument = gql`
-    query SingleCourse($id: ID!) {
+export type GetCoursesQueryHookResult = ReturnType<typeof useGetCoursesQuery>;
+export type GetCoursesLazyQueryHookResult = ReturnType<typeof useGetCoursesLazyQuery>;
+export type GetCoursesQueryResult = Apollo.QueryResult<GetCoursesQuery, GetCoursesQueryVariables>;
+export const GetSingleCourseDocument = gql`
+    query GetSingleCourse($id: ID!) {
   getSingleCourse(id: $id) {
-    id
-    courseName
-    tasks {
-      id
-      title
-    }
-    taskCount
+    ...CourseFragment
   }
 }
-    `;
+    ${CourseFragmentFragmentDoc}`;
 
 /**
- * __useSingleCourseQuery__
+ * __useGetSingleCourseQuery__
  *
- * To run a query within a React component, call `useSingleCourseQuery` and pass it any options that fit your needs.
- * When your component renders, `useSingleCourseQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetSingleCourseQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSingleCourseQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useSingleCourseQuery({
+ * const { data, loading, error } = useGetSingleCourseQuery({
  *   variables: {
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useSingleCourseQuery(baseOptions: Apollo.QueryHookOptions<SingleCourseQuery, SingleCourseQueryVariables>) {
+export function useGetSingleCourseQuery(baseOptions: Apollo.QueryHookOptions<GetSingleCourseQuery, GetSingleCourseQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<SingleCourseQuery, SingleCourseQueryVariables>(SingleCourseDocument, options);
+        return Apollo.useQuery<GetSingleCourseQuery, GetSingleCourseQueryVariables>(GetSingleCourseDocument, options);
       }
-export function useSingleCourseLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SingleCourseQuery, SingleCourseQueryVariables>) {
+export function useGetSingleCourseLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSingleCourseQuery, GetSingleCourseQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<SingleCourseQuery, SingleCourseQueryVariables>(SingleCourseDocument, options);
+          return Apollo.useLazyQuery<GetSingleCourseQuery, GetSingleCourseQueryVariables>(GetSingleCourseDocument, options);
         }
-export type SingleCourseQueryHookResult = ReturnType<typeof useSingleCourseQuery>;
-export type SingleCourseLazyQueryHookResult = ReturnType<typeof useSingleCourseLazyQuery>;
-export type SingleCourseQueryResult = Apollo.QueryResult<SingleCourseQuery, SingleCourseQueryVariables>;
-export const UpdateCourseDocument = gql`
-    mutation UpdateCourse($input: UpdateCourseInput!) {
-  updateCourse(input: $input) {
-    ... on Course {
-      __typename
-      id
-      courseName
-      tasks {
-        id
-        title
-      }
-      taskCount
-    }
-    ... on MutateCourseError {
-      __typename
-      field
-      message
-    }
-  }
-}
-    `;
-export type UpdateCourseMutationFn = Apollo.MutationFunction<UpdateCourseMutation, UpdateCourseMutationVariables>;
-
-/**
- * __useUpdateCourseMutation__
- *
- * To run a mutation, you first call `useUpdateCourseMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateCourseMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateCourseMutation, { data, loading, error }] = useUpdateCourseMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useUpdateCourseMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCourseMutation, UpdateCourseMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateCourseMutation, UpdateCourseMutationVariables>(UpdateCourseDocument, options);
-      }
-export type UpdateCourseMutationHookResult = ReturnType<typeof useUpdateCourseMutation>;
-export type UpdateCourseMutationResult = Apollo.MutationResult<UpdateCourseMutation>;
-export type UpdateCourseMutationOptions = Apollo.BaseMutationOptions<UpdateCourseMutation, UpdateCourseMutationVariables>;
+export type GetSingleCourseQueryHookResult = ReturnType<typeof useGetSingleCourseQuery>;
+export type GetSingleCourseLazyQueryHookResult = ReturnType<typeof useGetSingleCourseLazyQuery>;
+export type GetSingleCourseQueryResult = Apollo.QueryResult<GetSingleCourseQuery, GetSingleCourseQueryVariables>;
 export const CreateTaskDocument = gql`
     mutation CreateTask($input: CreateTaskInput!) {
   createTask(input: $input) {
-    ... on Task {
-      __typename
-      id
-      title
-      course {
-        id
-        courseName
-        taskCount
-      }
-      description
-      due
-      completed
-    }
-    ... on MutateTaskError {
-      __typename
-      field
-      message
-    }
+    ...MutateTaskFragment
   }
 }
-    `;
+    ${MutateTaskFragmentFragmentDoc}`;
 export type CreateTaskMutationFn = Apollo.MutationFunction<CreateTaskMutation, CreateTaskMutationVariables>;
 
 /**
@@ -796,6 +810,39 @@ export function useCreateTaskMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateTaskMutationHookResult = ReturnType<typeof useCreateTaskMutation>;
 export type CreateTaskMutationResult = Apollo.MutationResult<CreateTaskMutation>;
 export type CreateTaskMutationOptions = Apollo.BaseMutationOptions<CreateTaskMutation, CreateTaskMutationVariables>;
+export const UpdateTaskDocument = gql`
+    mutation UpdateTask($input: UpdateTaskInput!) {
+  updateTask(input: $input) {
+    ...MutateTaskFragment
+  }
+}
+    ${MutateTaskFragmentFragmentDoc}`;
+export type UpdateTaskMutationFn = Apollo.MutationFunction<UpdateTaskMutation, UpdateTaskMutationVariables>;
+
+/**
+ * __useUpdateTaskMutation__
+ *
+ * To run a mutation, you first call `useUpdateTaskMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTaskMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTaskMutation, { data, loading, error }] = useUpdateTaskMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateTaskMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTaskMutation, UpdateTaskMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTaskMutation, UpdateTaskMutationVariables>(UpdateTaskDocument, options);
+      }
+export type UpdateTaskMutationHookResult = ReturnType<typeof useUpdateTaskMutation>;
+export type UpdateTaskMutationResult = Apollo.MutationResult<UpdateTaskMutation>;
+export type UpdateTaskMutationOptions = Apollo.BaseMutationOptions<UpdateTaskMutation, UpdateTaskMutationVariables>;
 export const DeleteTaskDocument = gql`
     mutation DeleteTask($id: ID!) {
   deleteTask(id: $id)
@@ -827,65 +874,13 @@ export function useDeleteTaskMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteTaskMutationHookResult = ReturnType<typeof useDeleteTaskMutation>;
 export type DeleteTaskMutationResult = Apollo.MutationResult<DeleteTaskMutation>;
 export type DeleteTaskMutationOptions = Apollo.BaseMutationOptions<DeleteTaskMutation, DeleteTaskMutationVariables>;
-export const SingleTaskDocument = gql`
-    query SingleTask {
-  getSingleTask(id: 10) {
-    id
-    title
-    course {
-      id
-      courseName
-      taskCount
-    }
-    completed
-    description
-    due
-  }
-}
-    `;
-
-/**
- * __useSingleTaskQuery__
- *
- * To run a query within a React component, call `useSingleTaskQuery` and pass it any options that fit your needs.
- * When your component renders, `useSingleTaskQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useSingleTaskQuery({
- *   variables: {
- *   },
- * });
- */
-export function useSingleTaskQuery(baseOptions?: Apollo.QueryHookOptions<SingleTaskQuery, SingleTaskQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<SingleTaskQuery, SingleTaskQueryVariables>(SingleTaskDocument, options);
-      }
-export function useSingleTaskLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SingleTaskQuery, SingleTaskQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<SingleTaskQuery, SingleTaskQueryVariables>(SingleTaskDocument, options);
-        }
-export type SingleTaskQueryHookResult = ReturnType<typeof useSingleTaskQuery>;
-export type SingleTaskLazyQueryHookResult = ReturnType<typeof useSingleTaskLazyQuery>;
-export type SingleTaskQueryResult = Apollo.QueryResult<SingleTaskQuery, SingleTaskQueryVariables>;
 export const GetTasksDocument = gql`
-    query GetTasks($cursor: ID, $filter: TaskFilterInput, $limit: Int) {
-  getTasks(cursor: $cursor, filter: $filter, limit: $limit) {
-    id
-    title
-    course {
-      id
-      courseName
-      taskCount
-    }
-    completed
-    description
-    due
+    query GetTasks($filter: TaskFilterInput!, $cursor: ID, $limit: Int) {
+  getTasks(filter: $filter, cursor: $cursor, limit: $limit) {
+    ...TaskFragment
   }
 }
-    `;
+    ${TaskFragmentFragmentDoc}`;
 
 /**
  * __useGetTasksQuery__
@@ -899,13 +894,13 @@ export const GetTasksDocument = gql`
  * @example
  * const { data, loading, error } = useGetTasksQuery({
  *   variables: {
- *      cursor: // value for 'cursor'
  *      filter: // value for 'filter'
+ *      cursor: // value for 'cursor'
  *      limit: // value for 'limit'
  *   },
  * });
  */
-export function useGetTasksQuery(baseOptions?: Apollo.QueryHookOptions<GetTasksQuery, GetTasksQueryVariables>) {
+export function useGetTasksQuery(baseOptions: Apollo.QueryHookOptions<GetTasksQuery, GetTasksQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetTasksQuery, GetTasksQueryVariables>(GetTasksDocument, options);
       }
@@ -916,56 +911,41 @@ export function useGetTasksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetTasksQueryHookResult = ReturnType<typeof useGetTasksQuery>;
 export type GetTasksLazyQueryHookResult = ReturnType<typeof useGetTasksLazyQuery>;
 export type GetTasksQueryResult = Apollo.QueryResult<GetTasksQuery, GetTasksQueryVariables>;
-export const UpdateTaskDocument = gql`
-    mutation UpdateTask($input: UpdateTaskInput!) {
-  updateTask(input: $input) {
-    ... on Task {
-      __typename
-      id
-      title
-      course {
-        id
-        courseName
-        taskCount
-      }
-      description
-      due
-      completed
-    }
-    ... on MutateTaskError {
-      __typename
-      field
-      message
-    }
+export const GetSingleTaskDocument = gql`
+    query GetSingleTask($id: ID!) {
+  getSingleTask(id: $id) {
+    ...TaskFragment
   }
 }
-    `;
-export type UpdateTaskMutationFn = Apollo.MutationFunction<UpdateTaskMutation, UpdateTaskMutationVariables>;
+    ${TaskFragmentFragmentDoc}`;
 
 /**
- * __useUpdateTaskMutation__
+ * __useGetSingleTaskQuery__
  *
- * To run a mutation, you first call `useUpdateTaskMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateTaskMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
+ * To run a query within a React component, call `useGetSingleTaskQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSingleTaskQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const [updateTaskMutation, { data, loading, error }] = useUpdateTaskMutation({
+ * const { data, loading, error } = useGetSingleTaskQuery({
  *   variables: {
- *      input: // value for 'input'
+ *      id: // value for 'id'
  *   },
  * });
  */
-export function useUpdateTaskMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTaskMutation, UpdateTaskMutationVariables>) {
+export function useGetSingleTaskQuery(baseOptions: Apollo.QueryHookOptions<GetSingleTaskQuery, GetSingleTaskQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateTaskMutation, UpdateTaskMutationVariables>(UpdateTaskDocument, options);
+        return Apollo.useQuery<GetSingleTaskQuery, GetSingleTaskQueryVariables>(GetSingleTaskDocument, options);
       }
-export type UpdateTaskMutationHookResult = ReturnType<typeof useUpdateTaskMutation>;
-export type UpdateTaskMutationResult = Apollo.MutationResult<UpdateTaskMutation>;
-export type UpdateTaskMutationOptions = Apollo.BaseMutationOptions<UpdateTaskMutation, UpdateTaskMutationVariables>;
+export function useGetSingleTaskLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSingleTaskQuery, GetSingleTaskQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSingleTaskQuery, GetSingleTaskQueryVariables>(GetSingleTaskDocument, options);
+        }
+export type GetSingleTaskQueryHookResult = ReturnType<typeof useGetSingleTaskQuery>;
+export type GetSingleTaskLazyQueryHookResult = ReturnType<typeof useGetSingleTaskLazyQuery>;
+export type GetSingleTaskQueryResult = Apollo.QueryResult<GetSingleTaskQuery, GetSingleTaskQueryVariables>;
 export const TestDocument = gql`
     query Test {
   hello

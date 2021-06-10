@@ -4,7 +4,7 @@ import {
   useCreateTaskMutation,
   GetTasksDocument,
   CreateTaskMutation,
-  useCoursesQuery,
+  useGetCoursesQuery,
   Course,
 } from "src/generated/graphql";
 import DatePicker from "../DatePicker";
@@ -18,7 +18,11 @@ interface CoursePickerProps {
 }
 
 const CoursePicker: FC<CoursePickerProps> = ({ value, onChange }) => {
-  const { error: courseError, data: courseData, loading } = useCoursesQuery();
+  const {
+    error: courseError,
+    data: courseData,
+    loading,
+  } = useGetCoursesQuery();
 
   useEffect(() => {
     console.log("use effect", courseData);
