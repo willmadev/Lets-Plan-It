@@ -56,11 +56,12 @@ const CoursePicker: FC<CoursePickerProps> = ({ value, onChange }) => {
   };
 
   return (
-    <Dropdown className={styles.courseSelector} value={value}>
-      <div className={styles.courseContainer}>
+    <Dropdown className={styles.coursePicker} value={value}>
+      <div className={styles.coursePickerContainer}>
         {courseData.getCourses.map((course) => {
           return (
             <button
+              className={styles.coursePickerButton}
               type="button"
               key={course.id}
               onClick={(e) => selectCourse(e, course)}

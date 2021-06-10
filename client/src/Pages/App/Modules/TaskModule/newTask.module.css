@@ -32,10 +32,40 @@
 }
 
 .coursePicker {
-  color: blue;
+  width: max-content;
+}
+
+.coursePickerContainer {
+  min-width: min-content;
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+}
+
+.coursePickerButton {
+  font-family: lato, sans-serif;
+  font-size: 1rem;
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  border-bottom: 1px solid black;
+  padding: 4px 0px;
+}
+
+.coursePickerButton:hover {
+  background-color: lightgray;
 }
 
 .submit {
   grid-row: 2;
   grid-column: 3;
+
+  font-family: lato, sans-serif;
+  font-size: 1rem;
+  background-color: rgba(0, 0, 0, 0);
+  border: 1px solid black;
+  padding: 3px 5px;
+}
+
+.submit:hover {
+  background-color: lightgray;
 }
