@@ -1,17 +1,11 @@
-// import { FetchResult } from "@apollo/client";
 import { FC, useState } from "react";
 import {
-  // CreateTaskMutation,
+  Course,
   Task,
   useGetTasksQuery,
-  // useCreateTaskMutation,
-  // GetTasksDocument,
   useUpdateTaskMutation,
-  // useCoursesQuery,
 } from "src/generated/graphql";
 import { formatDate } from "src/helpers/formatDate";
-// import { sortByDueDate } from "src/helpers/sortByDueDate";
-// import DatePicker from "../DatePicker";
 import { NewTask } from "./NewTask";
 
 import styles from "./taskModule.module.css";
@@ -57,25 +51,22 @@ const TaskItem: FC<TaskItemProps> = ({ task }) => {
   );
 };
 
-const TaskList: FC = () => {
+interface TaskListProps {
+  course?: Course;
+}
+
+const TaskList: FC<TaskListProps> = ({ course }) => {
   const { error, data, fetchMore } = useGetTasksQuery({
     variables: {
       limit: 10,
       filter: {
         completed: false,
+        course: course?.id,
       },
     },
     fetchPolicy: "cache-and-network",
   });
   console.log("tasklist data:", data);
-
-  // if (loading) {
-  //   return (
-  //     <div>
-  //       <p>loading...</p>
-  //     </div>
-  //   );
-  // }
 
   if (error) {
     console.error("tasklist error:", error);
@@ -122,13 +113,17 @@ const TaskList: FC = () => {
   );
 };
 
-const TaskModule: FC = () => {
+interface TaskModuleProps {
+  course?: Course;
+}
+
+const TaskModule: FC<TaskModuleProps> = ({ course }) => {
   return (
     <div className={styles.moduleWrapper}>
       {/* New Task */}
-      <NewTask />
+      <NewTask course={course} />
       {/* Task List */}
-      <TaskList />
+      <TaskList course={course} />
     </div>
   );
 };

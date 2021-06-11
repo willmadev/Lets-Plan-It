@@ -1,10 +1,16 @@
-mutation CreateCourse($input: CreateCourseInput!) {
+mutation CreateCourse(
+  $input: CreateCourseInput!
+  $taskCountFilter: TaskFilterInput
+) {
   createCourse(input: $input) {
     ...MutateCourseFragment
   }
 }
 
-mutation UpdateCourse($input: UpdateCourseInput!) {
+mutation UpdateCourse(
+  $input: UpdateCourseInput!
+  $taskCountFilter: TaskFilterInput
+) {
   updateCourse(input: $input) {
     ...MutateCourseFragment
   }
@@ -14,13 +20,13 @@ mutation DeleteCourse($id: ID!) {
   deleteCourse(id: $id)
 }
 
-query GetCourses {
+query GetCourses($taskCountFilter: TaskFilterInput) {
   getCourses {
     ...CourseFragment
   }
 }
 
-query GetSingleCourse($id: ID!) {
+query GetSingleCourse($id: ID!, $taskCountFilter: TaskFilterInput) {
   getSingleCourse(id: $id) {
     ...CourseFragment
   }
@@ -43,7 +49,7 @@ fragment CourseFragment on Course {
   id
   courseName
   color
-  taskCount
+  taskCount(filter: $taskCountFilter)
   tasks {
     __typename
     id

@@ -3,15 +3,20 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import styles from "./courses.module.css";
 import { Course, useGetCoursesQuery } from "src/generated/graphql";
+import { useHistory, useRouteMatch } from "react-router";
 
 interface CourseCardProps {
   course: Course;
 }
 
 export const CourseCard: FC<CourseCardProps> = ({ course }) => {
-  console.log(course);
+  const { path } = useRouteMatch();
+  const history = useHistory();
+  const onClick = () => {
+    history.push(`${path}/${course.id}`);
+  };
   return (
-    <div className={styles.courseCard_container}>
+    <div className={styles.courseCard_container} onClick={() => onClick()}>
       <div
         className={styles.courseCard_banner}
         style={{ backgroundColor: `#${course.color}` }}
@@ -38,7 +43,9 @@ export const CourseCard: FC<CourseCardProps> = ({ course }) => {
 };
 
 const CourseContainer: FC = () => {
-  const { data, loading, error } = useGetCoursesQuery();
+  const { data, loading, error } = useGetCoursesQuery({
+    variables: { taskCountFilter: { completed: false } },
+  });
 
   if (loading) {
     return <p>Loading...</p>;

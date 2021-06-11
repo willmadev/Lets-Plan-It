@@ -29,7 +29,7 @@ const CoursePicker: FC<CoursePickerProps> = ({ value, onChange }) => {
     if (courseData?.getCourses) {
       onChange(courseData.getCourses[0]);
     }
-  }, [courseData]);
+  }, []);
 
   if (courseError) {
     console.error(courseError);
@@ -75,7 +75,11 @@ const CoursePicker: FC<CoursePickerProps> = ({ value, onChange }) => {
   );
 };
 
-export const NewTask: FC = () => {
+interface NewTaskProps {
+  course?: Course;
+}
+
+export const NewTask: FC<NewTaskProps> = ({ course }) => {
   const [newTask, setNewTask] = useState({
     title: "",
     date: new Date(),
@@ -84,6 +88,15 @@ export const NewTask: FC = () => {
       courseName: "",
     },
   });
+
+  useEffect(() => {
+    if (course) {
+      setNewTask({
+        ...newTask,
+        course: { id: course.id, courseName: course.courseName },
+      });
+    }
+  }, []);
 
   const handleTaskInputChange = (field: string, value: any) => {
     setNewTask({ ...newTask, [field]: value });
@@ -173,13 +186,15 @@ export const NewTask: FC = () => {
             handleTaskInputChange("date", date);
           }}
         />
-        <CoursePicker
-          value={newTask.course.courseName}
-          onChange={(course: Course) => {
-            console.log(course);
-            handleTaskInputChange("course", course);
-          }}
-        />
+        {course ? null : (
+          <CoursePicker
+            value={newTask.course.courseName}
+            onChange={(course: Course) => {
+              console.log(course);
+              handleTaskInputChange("course", course);
+            }}
+          />
+        )}
       </div>
       <input
         name="submit"

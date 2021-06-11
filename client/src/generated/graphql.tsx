@@ -244,6 +244,7 @@ export type TestAuthQuery = (
 
 export type CreateCourseMutationVariables = Exact<{
   input: CreateCourseInput;
+  taskCountFilter?: Maybe<TaskFilterInput>;
 }>;
 
 
@@ -260,6 +261,7 @@ export type CreateCourseMutation = (
 
 export type UpdateCourseMutationVariables = Exact<{
   input: UpdateCourseInput;
+  taskCountFilter?: Maybe<TaskFilterInput>;
 }>;
 
 
@@ -284,7 +286,9 @@ export type DeleteCourseMutation = (
   & Pick<Mutation, 'deleteCourse'>
 );
 
-export type GetCoursesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetCoursesQueryVariables = Exact<{
+  taskCountFilter?: Maybe<TaskFilterInput>;
+}>;
 
 
 export type GetCoursesQuery = (
@@ -297,6 +301,7 @@ export type GetCoursesQuery = (
 
 export type GetSingleCourseQueryVariables = Exact<{
   id: Scalars['ID'];
+  taskCountFilter?: Maybe<TaskFilterInput>;
 }>;
 
 
@@ -438,7 +443,7 @@ export const CourseFragmentFragmentDoc = gql`
   id
   courseName
   color
-  taskCount
+  taskCount(filter: $taskCountFilter)
   tasks {
     __typename
     id
@@ -612,7 +617,7 @@ export type TestAuthQueryHookResult = ReturnType<typeof useTestAuthQuery>;
 export type TestAuthLazyQueryHookResult = ReturnType<typeof useTestAuthLazyQuery>;
 export type TestAuthQueryResult = Apollo.QueryResult<TestAuthQuery, TestAuthQueryVariables>;
 export const CreateCourseDocument = gql`
-    mutation CreateCourse($input: CreateCourseInput!) {
+    mutation CreateCourse($input: CreateCourseInput!, $taskCountFilter: TaskFilterInput) {
   createCourse(input: $input) {
     ...MutateCourseFragment
   }
@@ -634,6 +639,7 @@ export type CreateCourseMutationFn = Apollo.MutationFunction<CreateCourseMutatio
  * const [createCourseMutation, { data, loading, error }] = useCreateCourseMutation({
  *   variables: {
  *      input: // value for 'input'
+ *      taskCountFilter: // value for 'taskCountFilter'
  *   },
  * });
  */
@@ -645,7 +651,7 @@ export type CreateCourseMutationHookResult = ReturnType<typeof useCreateCourseMu
 export type CreateCourseMutationResult = Apollo.MutationResult<CreateCourseMutation>;
 export type CreateCourseMutationOptions = Apollo.BaseMutationOptions<CreateCourseMutation, CreateCourseMutationVariables>;
 export const UpdateCourseDocument = gql`
-    mutation UpdateCourse($input: UpdateCourseInput!) {
+    mutation UpdateCourse($input: UpdateCourseInput!, $taskCountFilter: TaskFilterInput) {
   updateCourse(input: $input) {
     ...MutateCourseFragment
   }
@@ -667,6 +673,7 @@ export type UpdateCourseMutationFn = Apollo.MutationFunction<UpdateCourseMutatio
  * const [updateCourseMutation, { data, loading, error }] = useUpdateCourseMutation({
  *   variables: {
  *      input: // value for 'input'
+ *      taskCountFilter: // value for 'taskCountFilter'
  *   },
  * });
  */
@@ -709,7 +716,7 @@ export type DeleteCourseMutationHookResult = ReturnType<typeof useDeleteCourseMu
 export type DeleteCourseMutationResult = Apollo.MutationResult<DeleteCourseMutation>;
 export type DeleteCourseMutationOptions = Apollo.BaseMutationOptions<DeleteCourseMutation, DeleteCourseMutationVariables>;
 export const GetCoursesDocument = gql`
-    query GetCourses {
+    query GetCourses($taskCountFilter: TaskFilterInput) {
   getCourses {
     ...CourseFragment
   }
@@ -728,6 +735,7 @@ export const GetCoursesDocument = gql`
  * @example
  * const { data, loading, error } = useGetCoursesQuery({
  *   variables: {
+ *      taskCountFilter: // value for 'taskCountFilter'
  *   },
  * });
  */
@@ -743,7 +751,7 @@ export type GetCoursesQueryHookResult = ReturnType<typeof useGetCoursesQuery>;
 export type GetCoursesLazyQueryHookResult = ReturnType<typeof useGetCoursesLazyQuery>;
 export type GetCoursesQueryResult = Apollo.QueryResult<GetCoursesQuery, GetCoursesQueryVariables>;
 export const GetSingleCourseDocument = gql`
-    query GetSingleCourse($id: ID!) {
+    query GetSingleCourse($id: ID!, $taskCountFilter: TaskFilterInput) {
   getSingleCourse(id: $id) {
     ...CourseFragment
   }
@@ -763,6 +771,7 @@ export const GetSingleCourseDocument = gql`
  * const { data, loading, error } = useGetSingleCourseQuery({
  *   variables: {
  *      id: // value for 'id'
+ *      taskCountFilter: // value for 'taskCountFilter'
  *   },
  * });
  */
