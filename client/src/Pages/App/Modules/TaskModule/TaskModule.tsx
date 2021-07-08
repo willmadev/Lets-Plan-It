@@ -5,7 +5,7 @@ import {
   useGetTasksQuery,
   useUpdateTaskMutation,
 } from "src/generated/graphql";
-import { formatDate } from "src/helpers/formatDate";
+import { formatDate } from "src/utils/formatDate";
 import { NewTask } from "./NewTask";
 
 import styles from "./taskModule.module.css";

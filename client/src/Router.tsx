@@ -1,9 +1,11 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Landing from "./Pages/Landing";
 
-import App from "./Pages/App";
+// import App from "./Pages/App";
+import App from "./pages/App";
 import TestAuth from "./Pages/TestAuth";
-import { Login, Register } from "./Pages/Authentication";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const Router = () => {
   return (
@@ -12,7 +14,7 @@ const Router = () => {
         <Route exact path="/" component={Landing} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
-        <Route path="/app" component={App} />
+        <Route exact path="/app" component={App} />
         <Route exact path="/testAuth" component={TestAuth} />
       </Switch>
     </BrowserRouter>

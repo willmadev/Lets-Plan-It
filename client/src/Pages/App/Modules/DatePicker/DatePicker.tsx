@@ -3,7 +3,7 @@ import { format, add, set, getHours, getMinutes, sub } from "date-fns";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
-import { formatDate } from "../../../../helpers/formatDate";
+import { formatDate } from "../../../../utils/formatDate";
 import { Dropdown } from "../Dropdown";
 import styles from "./datepicker.module.css";
 

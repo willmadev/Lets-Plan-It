@@ -20,8 +20,17 @@ import {
   faCaretUp,
   faInfoCircle,
   faCheckCircle,
+  faBars,
+  faHome,
+  faPlus,
+  faSearch,
+  faBell,
+  faBook,
+  faCalendarWeek,
 } from "@fortawesome/free-solid-svg-icons";
-import { sortByDueDate } from "./helpers/sortByDueDate";
+import { sortByDueDate } from "./utils/sortByDueDate";
+import { ThemeProvider } from "styled-components";
+import theme from "./theme/theme";
 
 const httpLink = createHttpLink({
   uri: "http://localhost:5000/graphql",
@@ -204,11 +213,25 @@ const client = new ApolloClient({
 });
 
 // fontawesome
-library.add(faCaretDown, faCaretUp, faInfoCircle, faCheckCircle);
+library.add(
+  faCaretDown,
+  faCaretUp,
+  faInfoCircle,
+  faCheckCircle,
+  faBars,
+  faHome,
+  faPlus,
+  faSearch,
+  faBell,
+  faBook,
+  faCalendarWeek
+);
 
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <Router />
+    <ThemeProvider theme={theme}>
+      <Router />
+    </ThemeProvider>
   </ApolloProvider>,
   document.getElementById("root")
 );
