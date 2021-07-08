@@ -10,7 +10,7 @@ const PageWrapper = styled.div`
   height: 100vh;
   display: grid;
   grid-template-rows: min-content auto;
-  grid-template-columns: min-content max-content;
+  grid-template-columns: 250px max-content;
 `;
 
 const PageContent = styled.div`
@@ -19,6 +19,7 @@ const PageContent = styled.div`
   width: 100%;
   height: calc(100vh - 55px);
   background-color: ${(props) => props.theme.color.pageBackground};
+  overflow-y: scroll;
 `;
 
 const App: FC = () => {

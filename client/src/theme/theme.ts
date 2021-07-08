@@ -8,6 +8,8 @@ const theme = {
     headerIcon: "#ffffff",
     sidebarBackground: "#FCFBFF",
     sidebarItemBackground: "#d8d5e2",
+    taskBorder: "#D4D4D4",
+    taskDate: "#606060",
   },
 };
 
