@@ -10,6 +10,7 @@ const theme = {
     sidebarItemBackground: "#d8d5e2",
     taskBorder: "#D4D4D4",
     taskDate: "#606060",
+    buttonText: "#ffffff",
   },
 };
 

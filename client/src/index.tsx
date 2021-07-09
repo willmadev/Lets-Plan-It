@@ -27,6 +27,8 @@ import {
   faBell,
   faBook,
   faCalendarWeek,
+  faChevronLeft,
+  faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 import { sortByDueDate } from "./utils/sortByDueDate";
 import { ThemeProvider } from "styled-components";
@@ -224,7 +226,9 @@ library.add(
   faSearch,
   faBell,
   faBook,
-  faCalendarWeek
+  faCalendarWeek,
+  faChevronLeft,
+  faChevronDown
 );
 
 ReactDOM.render(

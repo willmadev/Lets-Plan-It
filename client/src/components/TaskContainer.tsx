@@ -11,6 +11,7 @@ const TaskItemContainer = styled.div`
   border: 1px solid ${(props) => props.theme.color.taskBorder};
   border-radius: 10px;
   padding: 0px 15px;
+  background-color: ${(props) => props.theme.color.elementBackground};
 `;
 
 const Checkbox: FC = () => {
@@ -27,4 +28,22 @@ const TaskItem: FC = () => {
   );
 };
 
-export default TaskItem;
+const StyledTaskContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+`;
+
+const TaskContainer: FC = () => {
+  return (
+    <StyledTaskContainer>
+      <TaskItem />
+      <TaskItem />
+      <TaskItem />
+      <TaskItem />
+      <TaskItem />
+    </StyledTaskContainer>
+  );
+};
+
+export default TaskContainer;

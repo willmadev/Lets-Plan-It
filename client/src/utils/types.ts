@@ -9,6 +9,7 @@ type iconName =
   | "search"
   | "bell"
   | "book"
-  | "calendar-week";
+  | "calendar-week"
+  | "chevron-left";
 
 export type { iconName };

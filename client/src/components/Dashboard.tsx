@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { StyledH1, StyledH2 } from "src/styles/app";
 import styled from "styled-components";
-import TaskItem from "./TaskItem";
+import TaskContainer from "./TaskContainer";
 
 const DashboardContainer = styled.div`
   width: 980px;
@@ -29,12 +29,6 @@ const CourseCard = styled.div`
   gap: 20px;
 `;
 
-const TaskContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-`;
-
 const Dashboard: FC = () => {
   return (
     <DashboardContainer>
@@ -42,50 +36,24 @@ const Dashboard: FC = () => {
       <CourseCardContainer>
         <CourseCard>
           <StyledH2>Course</StyledH2>
-          <TaskContainer>
-            <TaskItem />
-            <TaskItem />
-            <TaskItem />
-          </TaskContainer>
+          <TaskContainer />
         </CourseCard>
 
         <CourseCard>
           <StyledH2>Course</StyledH2>
-          <TaskContainer>
-            <TaskItem />
-            <TaskItem />
-            <TaskItem />
-          </TaskContainer>
+          <TaskContainer />
         </CourseCard>
         <CourseCard>
           <StyledH2>Course</StyledH2>
-          <TaskContainer>
-            <TaskItem />
-            <TaskItem />
-            <TaskItem />
-            <TaskItem />
-            <TaskItem />
-          </TaskContainer>
+          <TaskContainer />
         </CourseCard>
         <CourseCard>
           <StyledH2>Course</StyledH2>
-          <TaskContainer>
-            <TaskItem />
-            <TaskItem />
-            <TaskItem />
-          </TaskContainer>
+          <TaskContainer />
         </CourseCard>
         <CourseCard>
           <StyledH2>Course</StyledH2>
-          <TaskContainer>
-            <TaskItem />
-            <TaskItem />
-            <TaskItem />
-            <TaskItem />
-            <TaskItem />
-            <TaskItem />
-            <TaskItem />
-          </TaskContainer>
+          <TaskContainer />
         </CourseCard>
       </CourseCardContainer>
     </DashboardContainer>

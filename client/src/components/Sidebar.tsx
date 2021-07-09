@@ -16,17 +16,29 @@ const SidebarMenu = styled.div`
   flex-direction: column;
 `;
 
-const Sidebar: FC = () => {
+interface SidebarProps {
+  basePath: string;
+}
+
+const Sidebar: FC<SidebarProps> = ({ basePath }) => {
   return (
     <SidebarContainer>
       <SidebarMenu>
-        <SidebarMenuItem icon="home" title="Dashboard" path="/app" />
-        <SidebarMenuItem icon="book" title="Courses" path="/app" />
+        <SidebarMenuItem icon="home" title="Dashboard" path={basePath} />
+        <SidebarMenuItem
+          icon="book"
+          title="Courses"
+          path={`${basePath}/courses`}
+        />
         {/* <SidebarMenuItem icon="calendar-week" title="Upcoming" path="/app" /> */}
       </SidebarMenu>
       <hr />
       <SidebarMenu>
-        <SidebarMenuItem color="red" title="Course 1" path="/courses/1" />
+        <SidebarMenuItem
+          color="red"
+          title="Course 1"
+          path={`${basePath}/courses/1`}
+        />
       </SidebarMenu>
     </SidebarContainer>
   );

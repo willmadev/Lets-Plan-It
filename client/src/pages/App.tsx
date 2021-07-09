@@ -4,6 +4,7 @@ import Header from "src/components/Header";
 import Sidebar from "src/components/Sidebar";
 import Dashboard from "src/components/Dashboard";
 import styled from "styled-components";
+import Course from "src/components/Course";
 
 const PageWrapper = styled.div`
   width: 100vw;
@@ -16,7 +17,7 @@ const PageWrapper = styled.div`
 const PageContent = styled.div`
   grid-row: 2;
   grid-column: 2;
-  width: 100%;
+  width: calc(100vw - 250px);
   height: calc(100vh - 55px);
   background-color: ${(props) => props.theme.color.pageBackground};
   overflow-y: scroll;
@@ -24,13 +25,15 @@ const PageContent = styled.div`
 
 const App: FC = () => {
   const { path } = useRouteMatch();
+  console.log(path);
   return (
     <PageWrapper>
       <Header />
-      <Sidebar />
+      <Sidebar basePath={path} />
       <PageContent>
         <Switch>
-          <Route exact path={path} component={Dashboard} />
+          <Route exact path={`${path}/course/`} component={Course} />
+          <Route path={path} component={Dashboard} />
         </Switch>
       </PageContent>
     </PageWrapper>

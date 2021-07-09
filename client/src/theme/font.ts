@@ -7,7 +7,7 @@ const fonts = {
   `,
 
   authHeading: `
-    font-family: "Noto Sans", sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-style: normal;
     font-weight: 600;
     font-size: 48px;
@@ -32,6 +32,13 @@ const fonts = {
     font-weight: normal;
     font-size: 18px;
     
+  `,
+
+  buttonText: `
+    font-family: "Open Sans", sans-serif;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 400;
   `,
 };
 export default fonts;
