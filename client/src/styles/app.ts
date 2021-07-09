@@ -17,9 +17,9 @@ const StyledH2 = styled.h2`
   line-height: 41px;
 `;
 
-const BackButton = styled(FontAwesomeIcon)`
+const IconButton = styled(FontAwesomeIcon)`
   font-size: 25px;
   cursor: pointer;
 `;
 
-export { StyledH1, StyledH2, BackButton };
+export { StyledH1, StyledH2, IconButton };

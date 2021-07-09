@@ -1,8 +1,10 @@
 import { FC } from "react";
 import styled from "styled-components";
-import { BackButton, StyledH1, StyledH2 } from "src/styles/app";
+import { IconButton, StyledH1, StyledH2 } from "src/styles/app";
 import fonts from "src/theme/font";
 import TaskContainer from "./TaskContainer";
+import { useHistory } from "react-router-dom";
+import { History } from "history";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const CourseContainer = styled.div`
@@ -54,7 +56,7 @@ interface TaskListTitleProps {
 const TaskListTitle: FC<TaskListTitleProps> = ({ title, count }) => {
   return (
     <StyledTitleContainer>
-      <BackButton icon="chevron-down" />
+      <IconButton icon="chevron-down" />
       <StyledH2>
         {title} - {count}
       </StyledH2>
@@ -62,10 +64,25 @@ const TaskListTitle: FC<TaskListTitleProps> = ({ title, count }) => {
   );
 };
 
+interface CourseTitleProps {
+  courseName: string;
+  history: History;
+}
+
+const CourseTitle: FC<CourseTitleProps> = ({ courseName, history }) => {
+  return (
+    <StyledTitleContainer>
+      <IconButton icon="chevron-left" onClick={() => history.goBack()} />
+      <StyledH1>Course</StyledH1>
+    </StyledTitleContainer>
+  );
+};
+
 const Course: FC = () => {
+  const history = useHistory();
   return (
     <CourseContainer>
-      <StyledH1>Courses</StyledH1>
+      <CourseTitle courseName="Course" history={history} />
       <AddTaskContainer>
         <AddTaskButton>Add Task</AddTaskButton>
         <AddTaskButton>Add From LMS</AddTaskButton>

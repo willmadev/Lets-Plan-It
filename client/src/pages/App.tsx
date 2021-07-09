@@ -5,6 +5,7 @@ import Sidebar from "src/components/Sidebar";
 import Dashboard from "src/components/Dashboard";
 import styled from "styled-components";
 import Course from "src/components/Course";
+import Courses from "src/components/Courses";
 
 const PageWrapper = styled.div`
   width: 100vw;
@@ -32,6 +33,11 @@ const App: FC = () => {
       <Sidebar basePath={path} />
       <PageContent>
         <Switch>
+          <Route
+            exact
+            path={`${path}/courses`}
+            render={() => <Courses basePath={path} />}
+          />
           <Route exact path={`${path}/course/`} component={Course} />
           <Route path={path} component={Dashboard} />
         </Switch>

@@ -2,6 +2,7 @@ const theme = {
   color: {
     pageBackground: "#F5F2F7",
     elementBackground: "#FFFFFF",
+    elementBackgroundHover: "#EEEEEE",
     primary: "#A63BE8",
     primaryHover: "#782CA7",
     hyperlink: "#8220FF",
