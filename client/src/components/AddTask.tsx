@@ -5,6 +5,12 @@ import "react-day-picker/lib/style.css";
 import fonts from "src/theme/font";
 
 const AddTaskContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
+
+const TaskInputContainer = styled.div`
   column-gap: 15px;
   height: min-content;
   align-items: center;
@@ -27,8 +33,7 @@ const TaskTitleInput = styled.textarea`
 
 const AddTaskOptions = styled.div`
   position: absolute;
-  display: grid;
-  grid-template-columns: max-content auto max-content;
+  display: flex;
   width: calc(100% - 40px);
   gap: 20px;
   bottom: 10px;
@@ -37,7 +42,6 @@ const AddTaskOptions = styled.div`
 `;
 
 const StyledDayPickerInput = styled.div`
-  grid-column: 1;
   font-family: "Open Sans", sans-serif;
   & input {
     font-size: 16px;
@@ -45,8 +49,12 @@ const StyledDayPickerInput = styled.div`
   }
 `;
 
+const AddTaskOptionsContainer = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
 const SubmitButton = styled.button`
-  grid-column: 3;
   height: max-content;
   width: max-content;
   background-color: ${(props) => props.theme.color.primary};
@@ -63,16 +71,39 @@ const SubmitButton = styled.button`
   }
 `;
 
-const AddTask: FC = () => {
+const CancelButton = styled.button`
+  height: max-content;
+  width: max-content;
+  background-color: rgba(0, 0, 0, 0);
+  border: 1px black solid;
+  font-size: 18px;
+  border-radius: 10px;
+  padding: 5px 12px;
+  cursor: pointer;
+  &:hover {
+    background-color: #acacac;
+  }
+`;
+
+interface AddTaskProps {
+  cancel: Function;
+}
+
+const AddTask: FC<AddTaskProps> = ({ cancel }) => {
   return (
     <AddTaskContainer>
-      <TaskTitleInput placeholder="Add new task" />
-      <AddTaskOptions>
-        <StyledDayPickerInput>
-          <DayPickerInput placeholder="Due date" />
-        </StyledDayPickerInput>
-        <SubmitButton>Add</SubmitButton>
-      </AddTaskOptions>
+      <TaskInputContainer>
+        <TaskTitleInput placeholder="Add new task" />
+        <AddTaskOptions>
+          <StyledDayPickerInput>
+            <DayPickerInput placeholder="Due date" />
+          </StyledDayPickerInput>
+        </AddTaskOptions>
+      </TaskInputContainer>
+      <AddTaskOptionsContainer>
+        <SubmitButton>Add Task</SubmitButton>
+        <CancelButton onClick={() => cancel()}>Cancel</CancelButton>
+      </AddTaskOptionsContainer>
     </AddTaskContainer>
   );
 };

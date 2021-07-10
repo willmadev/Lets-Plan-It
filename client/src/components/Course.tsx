@@ -8,6 +8,7 @@ import { History } from "history";
 import { CourseRouteParams } from "src/pages/App";
 import { useGetSingleCourseQuery } from "src/generated/graphql";
 import AddTask from "./AddTask";
+import { useState } from "react";
 
 const CourseContainer = styled.div`
   width: 980px;
@@ -87,6 +88,8 @@ const CourseTitleContainer = styled.div`
 
 const Course: FC = () => {
   const history = useHistory();
+  const [AddTaskActive, setAddTaskActive] = useState(false);
+
   const { courseId } = useParams<CourseRouteParams>();
 
   const { loading, data } = useGetSingleCourseQuery({
@@ -108,10 +111,14 @@ const Course: FC = () => {
         />
       </CourseTitleContainer>
       <AddTaskContainer>
-        <AddTaskButton>Add Task</AddTaskButton>
+        <AddTaskButton onClick={() => setAddTaskActive(true)}>
+          Add Task
+        </AddTaskButton>
         <AddTaskButton>Add From LMS</AddTaskButton>
       </AddTaskContainer>
-      <AddTask />
+      {AddTaskActive ? (
+        <AddTask cancel={() => setAddTaskActive(false)} />
+      ) : null}
       {data.getSingleCourse.tasks ? (
         <TaskListContainer>
           <TaskListTitle title="Tasks" count={data.getSingleCourse.taskCount} />
