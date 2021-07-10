@@ -1,9 +1,9 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import Landing from "./Pages/Landing";
+import Landing from "./pages/Landing";
 
 // import App from "./Pages/App";
 import App from "./pages/App";
-import TestAuth from "./Pages/TestAuth";
+import TestAuth from "./pages/TestAuth";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 

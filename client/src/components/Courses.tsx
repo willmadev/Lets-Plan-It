@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
+import { useGetCoursesQuery } from "src/generated/graphql";
 import { StyledH1, StyledH2 } from "src/styles/app";
 import { StyledParagraph } from "src/styles/global";
 import styled from "styled-components";
@@ -86,46 +87,30 @@ interface CoursesProps {
 }
 
 const Courses: FC<CoursesProps> = ({ basePath }) => {
+  const { loading, data } = useGetCoursesQuery();
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!data || !data.getCourses) {
+    return <p>No courses found</p>;
+  }
   return (
     <CoursesContainer>
       <StyledH1>Courses</StyledH1>
       <CourseCardsContainer>
-        <CourseCard
-          path={`${basePath}/course`}
-          courseName="Course Title"
-          taskCount={5}
-          color="#ff0000"
-        />
-        <CourseCard
-          path={`${basePath}/course`}
-          courseName="Course Title"
-          taskCount={5}
-          color="#ff00ff"
-        />
-        <CourseCard
-          path={`${basePath}/course`}
-          courseName="Course Title"
-          taskCount={5}
-          color="#ffff00"
-        />
-        <CourseCard
-          path={`${basePath}/course`}
-          courseName="Course Title"
-          taskCount={5}
-          color="#00ff00"
-        />
-        <CourseCard
-          path={`${basePath}/course`}
-          courseName="Course Title"
-          taskCount={5}
-          color="#ff00ff"
-        />
-        <CourseCard
-          path={`${basePath}/course`}
-          courseName="Course Title"
-          taskCount={5}
-          color="#00ffff"
-        />
+        {data.getCourses.map((course) => {
+          return (
+            <CourseCard
+              courseName={course.courseName}
+              path={`${basePath}/courses/${course.id}`}
+              taskCount={course.taskCount}
+              color={`#${course.color}`}
+              key={course.id}
+            />
+          );
+        })}
       </CourseCardsContainer>
     </CoursesContainer>
   );

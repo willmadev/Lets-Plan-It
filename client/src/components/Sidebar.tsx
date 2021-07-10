@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useGetCoursesQuery } from "src/generated/graphql";
 import styled from "styled-components";
 import SidebarMenuItem from "./SidebarMenuItem";
 
@@ -21,6 +22,7 @@ interface SidebarProps {
 }
 
 const Sidebar: FC<SidebarProps> = ({ basePath }) => {
+  const { loading, data } = useGetCoursesQuery();
   return (
     <SidebarContainer>
       <SidebarMenu>
@@ -34,11 +36,24 @@ const Sidebar: FC<SidebarProps> = ({ basePath }) => {
       </SidebarMenu>
       <hr />
       <SidebarMenu>
-        <SidebarMenuItem
-          color="red"
-          title="Course 1"
-          path={`${basePath}/courses/1`}
-        />
+        {(() => {
+          if (loading) {
+            return <p>Loading...</p>;
+          }
+          if (!data || !data.getCourses) {
+            return <p>No courses found</p>;
+          }
+          return data.getCourses.map((course) => {
+            return (
+              <SidebarMenuItem
+                title={course.courseName}
+                color={`#${course.color}`}
+                path={`${basePath}/courses/${course.id}`}
+                key={course.id}
+              />
+            );
+          });
+        })()}
       </SidebarMenu>
     </SidebarContainer>
   );

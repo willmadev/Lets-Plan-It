@@ -3,8 +3,10 @@ import styled from "styled-components";
 import { IconButton, StyledH1, StyledH2 } from "src/styles/app";
 import fonts from "src/theme/font";
 import TaskContainer from "./TaskContainer";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { History } from "history";
+import { CourseRouteParams } from "src/pages/App";
+import { useGetSingleCourseQuery } from "src/generated/graphql";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const CourseContainer = styled.div`
@@ -73,28 +75,47 @@ const CourseTitle: FC<CourseTitleProps> = ({ courseName, history }) => {
   return (
     <StyledTitleContainer>
       <IconButton icon="chevron-left" onClick={() => history.goBack()} />
-      <StyledH1>Course</StyledH1>
+      <StyledH1>{courseName}</StyledH1>
     </StyledTitleContainer>
   );
 };
 
 const Course: FC = () => {
   const history = useHistory();
+  const { courseId } = useParams<CourseRouteParams>();
+
+  const { loading, data } = useGetSingleCourseQuery({
+    variables: { id: courseId },
+  });
+  if (loading) {
+    return <p>Loading course...</p>;
+  }
+  if (!data || !data.getSingleCourse) {
+    return <p>Course not found</p>;
+  }
+
   return (
     <CourseContainer>
-      <CourseTitle courseName="Course" history={history} />
+      <CourseTitle
+        courseName={data.getSingleCourse.courseName}
+        history={history}
+      />
       <AddTaskContainer>
         <AddTaskButton>Add Task</AddTaskButton>
         <AddTaskButton>Add From LMS</AddTaskButton>
       </AddTaskContainer>
-      <TaskListContainer>
-        <TaskListTitle title="Tasks" count={5} />
-        <TaskContainer />
-      </TaskListContainer>
-      <TaskListContainer>
+      {data.getSingleCourse.tasks ? (
+        <TaskListContainer>
+          <TaskListTitle title="Tasks" count={data.getSingleCourse.taskCount} />
+          <TaskContainer tasks={data.getSingleCourse.tasks!} />
+        </TaskListContainer>
+      ) : (
+        <p>No tasks</p>
+      )}
+      {/* <TaskListContainer>
         <TaskListTitle title="Completed" count={3} />
         <TaskContainer />
-      </TaskListContainer>
+      </TaskListContainer> */}
     </CourseContainer>
   );
 };

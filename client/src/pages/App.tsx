@@ -7,6 +7,10 @@ import styled from "styled-components";
 import Course from "src/components/Course";
 import Courses from "src/components/Courses";
 
+export interface CourseRouteParams {
+  courseId: string;
+}
+
 const PageWrapper = styled.div`
   width: 100vw;
   height: 100vh;
@@ -38,7 +42,7 @@ const App: FC = () => {
             path={`${path}/courses`}
             render={() => <Courses basePath={path} />}
           />
-          <Route exact path={`${path}/course/`} component={Course} />
+          <Route path={`${path}/courses/:courseId`} component={Course} />
           <Route path={path} component={Dashboard} />
         </Switch>
       </PageContent>

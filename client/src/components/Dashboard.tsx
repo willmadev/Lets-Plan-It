@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useGetCoursesQuery } from "src/generated/graphql";
 import { StyledH1, StyledH2 } from "src/styles/app";
 import styled from "styled-components";
 import TaskContainer from "./TaskContainer";
@@ -30,31 +31,32 @@ const CourseCard = styled.div`
 `;
 
 const Dashboard: FC = () => {
+  const { loading, data } = useGetCoursesQuery();
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!data || !data.getCourses) {
+    return <p>No courses found</p>;
+  }
+
   return (
     <DashboardContainer>
       <StyledH1>Dashboard</StyledH1>
       <CourseCardContainer>
-        <CourseCard>
-          <StyledH2>Course</StyledH2>
-          <TaskContainer />
-        </CourseCard>
-
-        <CourseCard>
-          <StyledH2>Course</StyledH2>
-          <TaskContainer />
-        </CourseCard>
-        <CourseCard>
-          <StyledH2>Course</StyledH2>
-          <TaskContainer />
-        </CourseCard>
-        <CourseCard>
-          <StyledH2>Course</StyledH2>
-          <TaskContainer />
-        </CourseCard>
-        <CourseCard>
-          <StyledH2>Course</StyledH2>
-          <TaskContainer />
-        </CourseCard>
+        {data.getCourses.map((course) => {
+          return (
+            <CourseCard key={course.id}>
+              <StyledH2>{course.courseName}</StyledH2>
+              {course.tasks ? (
+                <TaskContainer tasks={course.tasks} />
+              ) : (
+                <p>No tasks found</p>
+              )}
+            </CourseCard>
+          );
+        })}
       </CourseCardContainer>
     </DashboardContainer>
   );
