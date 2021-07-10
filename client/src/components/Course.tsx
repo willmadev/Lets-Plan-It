@@ -7,7 +7,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { History } from "history";
 import { CourseRouteParams } from "src/pages/App";
 import { useGetSingleCourseQuery } from "src/generated/graphql";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import AddTask from "./AddTask";
 
 const CourseContainer = styled.div`
   width: 980px;
@@ -21,13 +21,13 @@ const CourseContainer = styled.div`
 
 const AddTaskContainer = styled.div`
   display: flex;
-  gap: 30px;
+  gap: 20px;
 `;
 
 const AddTaskButton = styled.button`
   background-color: ${(props) => props.theme.color.primary};
   cursor: pointer;
-  padding: 8px 20px;
+  padding: 7px 15px;
   ${fonts.buttonText}
   color: ${(props) => props.theme.color.buttonText};
   border: none;
@@ -80,6 +80,11 @@ const CourseTitle: FC<CourseTitleProps> = ({ courseName, history }) => {
   );
 };
 
+const CourseTitleContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 const Course: FC = () => {
   const history = useHistory();
   const { courseId } = useParams<CourseRouteParams>();
@@ -96,14 +101,17 @@ const Course: FC = () => {
 
   return (
     <CourseContainer>
-      <CourseTitle
-        courseName={data.getSingleCourse.courseName}
-        history={history}
-      />
+      <CourseTitleContainer>
+        <CourseTitle
+          courseName={data.getSingleCourse.courseName}
+          history={history}
+        />
+      </CourseTitleContainer>
       <AddTaskContainer>
         <AddTaskButton>Add Task</AddTaskButton>
         <AddTaskButton>Add From LMS</AddTaskButton>
       </AddTaskContainer>
+      <AddTask />
       {data.getSingleCourse.tasks ? (
         <TaskListContainer>
           <TaskListTitle title="Tasks" count={data.getSingleCourse.taskCount} />

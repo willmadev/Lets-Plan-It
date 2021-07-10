@@ -7,14 +7,13 @@ import {
 } from "@apollo/client";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { setContext } from "@apollo/client/link/context";
+import { library } from "@fortawesome/fontawesome-svg-core";
 
 import { TokenRefreshLink } from "apollo-link-token-refresh";
 import jwtDecode, { JwtPayload } from "jwt-decode";
 import Router from "./Router";
 import { getAccessToken, setAccessToken } from "./accessToken";
-
 import "./index.css";
-import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faCaretDown,
   faCaretUp,

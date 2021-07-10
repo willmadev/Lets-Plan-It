@@ -3,7 +3,7 @@ const fonts = {
     font-family: Roboto, sans-serif;
     font-style: normal;
     font-weight: normal;
-    font-size: 20px;
+    font-size: 18px;
   `,
 
   authHeading: `
@@ -36,7 +36,7 @@ const fonts = {
 
   buttonText: `
     font-family: "Open Sans", sans-serif;
-    font-size: 22px;
+    font-size: 20px;
     font-style: normal;
     font-weight: 400;
   `,
