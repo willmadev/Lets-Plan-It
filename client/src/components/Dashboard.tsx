@@ -1,8 +1,8 @@
 import { FC } from "react";
 import { useGetCoursesQuery } from "src/generated/graphql";
-import { StyledH1, StyledH2 } from "src/styles/app";
+import { StyledH1 } from "src/styles/app";
 import styled from "styled-components";
-import TaskContainer from "./TaskContainer";
+// import TaskContainer from "./TaskContainer";
 
 const DashboardContainer = styled.div`
   width: 980px;
@@ -14,21 +14,21 @@ const DashboardContainer = styled.div`
   gap: 30px;
 `;
 
-const CourseCardContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 50px;
-`;
-const CourseCard = styled.div`
-  width: calc(100% - 80px);
-  background-color: ${(props) => props.theme.color.elementBackground};
-  padding: 20px 40px;
-  border-radius: 20px;
-  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.05));
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`;
+// const CourseCardContainer = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   gap: 50px;
+// `;
+// const CourseCard = styled.div`
+//   width: calc(100% - 80px);
+//   background-color: ${(props) => props.theme.color.elementBackground};
+//   padding: 20px 40px;
+//   border-radius: 20px;
+//   filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.05));
+//   display: flex;
+//   flex-direction: column;
+//   gap: 20px;
+// `;
 
 const Dashboard: FC = () => {
   const { loading, data } = useGetCoursesQuery();
@@ -44,7 +44,7 @@ const Dashboard: FC = () => {
   return (
     <DashboardContainer>
       <StyledH1>Dashboard</StyledH1>
-      <CourseCardContainer>
+      {/* <CourseCardContainer>
         {data.getCourses.map((course) => {
           return (
             <CourseCard key={course.id}>
@@ -57,7 +57,7 @@ const Dashboard: FC = () => {
             </CourseCard>
           );
         })}
-      </CourseCardContainer>
+      </CourseCardContainer> */}
     </DashboardContainer>
   );
 };

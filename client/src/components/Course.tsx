@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import styled from "styled-components";
 import { IconButton, StyledH1, StyledH2 } from "src/styles/app";
 import fonts from "src/theme/font";
@@ -6,9 +6,11 @@ import TaskContainer from "./TaskContainer";
 import { useHistory, useParams } from "react-router-dom";
 import { History } from "history";
 import { CourseRouteParams } from "src/pages/App";
-import { useGetSingleCourseQuery } from "src/generated/graphql";
+import {
+  useGetSingleCourseQuery,
+  useGetTasksQuery,
+} from "src/generated/graphql";
 import AddTask from "./AddTask";
-import { useState } from "react";
 
 const CourseContainer = styled.div`
   width: 980px;
@@ -88,25 +90,47 @@ const CourseTitleContainer = styled.div`
 
 const Course: FC = () => {
   const history = useHistory();
-  const [AddTaskActive, setAddTaskActive] = useState(false);
-
   const { courseId } = useParams<CourseRouteParams>();
+  const [addTaskActive, setAddTaskActive] = useState(false);
 
-  const { loading, data } = useGetSingleCourseQuery({
+  // course query
+  const { loading: courseLoading, data: courseData } = useGetSingleCourseQuery({
     variables: { id: courseId },
   });
-  if (loading) {
+
+  // task query
+  const {
+    error: tasksError,
+    data: tasksData,
+    fetchMore: tasksFetchMore,
+  } = useGetTasksQuery({
+    variables: {
+      limit: 10,
+      filter: { course: courseData?.getSingleCourse?.id },
+    },
+    fetchPolicy: "cache-and-network",
+  });
+  console.log(tasksData);
+  //#region loading and no data
+  if (courseLoading) {
     return <p>Loading course...</p>;
   }
-  if (!data || !data.getSingleCourse) {
+  if (!courseData || !courseData.getSingleCourse) {
     return <p>Course not found</p>;
   }
+  if (!tasksData || !tasksData.getTasks) {
+    return <p>No tasks found</p>;
+  }
+  if (tasksError) {
+    return <p>Error: {tasksError.message}</p>;
+  }
+  //#endregion
 
   return (
     <CourseContainer>
       <CourseTitleContainer>
         <CourseTitle
-          courseName={data.getSingleCourse.courseName}
+          courseName={courseData.getSingleCourse.courseName}
           history={history}
         />
       </CourseTitleContainer>
@@ -116,13 +140,31 @@ const Course: FC = () => {
         </AddTaskButton>
         <AddTaskButton>Add From LMS</AddTaskButton>
       </AddTaskContainer>
-      {AddTaskActive ? (
-        <AddTask cancel={() => setAddTaskActive(false)} />
+      {addTaskActive ? (
+        <AddTask
+          cancel={() => setAddTaskActive(false)}
+          course={courseData.getSingleCourse}
+        />
       ) : null}
-      {data.getSingleCourse.tasks ? (
+      {tasksData.getTasks ? (
         <TaskListContainer>
-          <TaskListTitle title="Tasks" count={data.getSingleCourse.taskCount} />
-          <TaskContainer tasks={data.getSingleCourse.tasks!} />
+          <TaskListTitle
+            title="Tasks"
+            count={courseData.getSingleCourse.taskCount}
+          />
+          <TaskContainer tasks={tasksData.getTasks} />
+          <button
+            onClick={() =>
+              tasksFetchMore({
+                variables: {
+                  cursor: tasksData.getTasks[tasksData.getTasks.length - 1].id,
+                  limit: 10,
+                },
+              })
+            }
+          >
+            Load more
+          </button>
         </TaskListContainer>
       ) : (
         <p>No tasks</p>

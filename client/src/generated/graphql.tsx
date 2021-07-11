@@ -328,14 +328,6 @@ export type MutateCourseFragmentFragment = MutateCourseFragment_Course_Fragment 
 export type CourseFragmentFragment = (
   { __typename: 'Course' }
   & Pick<Course, 'id' | 'courseName' | 'color' | 'taskCount'>
-  & { tasks?: Maybe<Array<(
-    { __typename: 'Task' }
-    & Pick<Task, 'id' | 'title' | 'description' | 'completed' | 'due'>
-    & { course: (
-      { __typename?: 'Course' }
-      & Pick<Course, 'id' | 'courseName' | 'color' | 'taskCount'>
-    ) }
-  )>> }
 );
 
 export type CreateTaskMutationVariables = Exact<{
@@ -444,20 +436,6 @@ export const CourseFragmentFragmentDoc = gql`
   courseName
   color
   taskCount(filter: $taskCountFilter)
-  tasks {
-    __typename
-    id
-    title
-    description
-    completed
-    due
-    course {
-      id
-      courseName
-      color
-      taskCount
-    }
-  }
 }
     `;
 export const MutateCourseFragmentFragmentDoc = gql`

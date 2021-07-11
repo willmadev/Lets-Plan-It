@@ -50,18 +50,18 @@ fragment CourseFragment on Course {
   courseName
   color
   taskCount(filter: $taskCountFilter)
-  tasks {
-    __typename
-    id
-    title
-    description
-    completed
-    due
-    course {
-      id
-      courseName
-      color
-      taskCount
-    }
-  }
+  # tasks {
+  #   __typename
+  #   id
+  #   title
+  #   description
+  #   completed
+  #   due
+  #   course {
+  #     id
+  #     courseName
+  #     color
+  #     taskCount
+  #   }
+  # }
 }
