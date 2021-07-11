@@ -1,8 +1,15 @@
-import { FC } from "react";
+import { FC, useState, useEffect } from "react";
 import styled from "styled-components";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 import "react-day-picker/lib/style.css";
 import fonts from "src/theme/font";
+import {
+  Course,
+  CreateTaskMutation,
+  GetTasksDocument,
+  useCreateTaskMutation,
+} from "src/generated/graphql";
+import { FetchResult } from "@apollo/client";
 
 const AddTaskContainer = styled.div`
   display: flex;
@@ -84,24 +91,108 @@ const CancelButton = styled.button`
     background-color: #acacac;
   }
 `;
-
 interface AddTaskProps {
   cancel: Function;
+  course?: Course | null;
 }
 
-const AddTask: FC<AddTaskProps> = ({ cancel }) => {
+const AddTask: FC<AddTaskProps> = ({ cancel, course }) => {
+  const [newTask, setNewTask] = useState({
+    title: "",
+    course: { id: "", courseName: "" },
+    due: new Date(),
+  });
+
+  useEffect(() => {
+    if (course) {
+      setNewTask({
+        ...newTask,
+        course: { courseName: course.courseName, id: course.id },
+      });
+    }
+  }, []);
+
+  // create task mutation
+  const [createTask] = useCreateTaskMutation({
+    // update cache to add newly created task
+    update: (cache, { data }) => {
+      if (!data) {
+        return;
+      }
+
+      if (data.createTask.__typename === "MutateTaskError") {
+        return;
+      }
+
+      // const { getTasks } = cache.readQuery({
+      //   query: GetTasksDocument,
+      // }) ?? { getTask: null };
+
+      // const newCache = [...getTasks, data?.createTask];
+
+      // add completed field
+      let completedFieldData = data.createTask;
+      cache.writeQuery({
+        query: GetTasksDocument,
+        data: { getTasks: [completedFieldData] },
+      });
+
+      console.log("new cache", completedFieldData);
+    },
+  });
+
+  const submitTask = async () => {
+    console.log("Submitting new task");
+
+    // input validation
+
+    let response: FetchResult<
+      CreateTaskMutation,
+      Record<string, any>,
+      Record<string, any>
+    >;
+    try {
+      response = await createTask({
+        variables: {
+          input: {
+            course: newTask.course.id,
+            due: newTask.due,
+            title: newTask.title,
+          },
+        },
+        // refetchQueries: [{ query: GetTasksDocument }],
+      });
+      console.log("create task response:", response);
+      setNewTask({
+        ...newTask,
+        due: new Date(),
+        title: "",
+      });
+    } catch (err) {
+      console.error("create task error:", err);
+    }
+  };
+
   return (
     <AddTaskContainer>
       <TaskInputContainer>
-        <TaskTitleInput placeholder="Add new task" />
+        <TaskTitleInput
+          placeholder="Add new task"
+          value={newTask.title}
+          onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+        />
         <AddTaskOptions>
           <StyledDayPickerInput>
-            <DayPickerInput placeholder="Due date" />
+            <DayPickerInput
+              placeholder="Due date"
+              value={newTask.due}
+              onDayChange={(day) => setNewTask({ ...newTask, due: day })}
+            />
           </StyledDayPickerInput>
         </AddTaskOptions>
       </TaskInputContainer>
       <AddTaskOptionsContainer>
-        <SubmitButton>Add Task</SubmitButton>
+        <SubmitButton onClick={() => submitTask()}>Add Task</SubmitButton>
         <CancelButton onClick={() => cancel()}>Cancel</CancelButton>
       </AddTaskOptionsContainer>
     </AddTaskContainer>
