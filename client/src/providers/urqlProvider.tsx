@@ -1,8 +1,15 @@
-import { createClient, makeOperation, Provider } from "urql";
+import {
+  cacheExchange,
+  createClient,
+  dedupExchange,
+  fetchExchange,
+  makeOperation,
+  Provider,
+} from "urql";
 import { authExchange } from "@urql/exchange-auth";
 import { AuthConfig } from "@urql/exchange-auth/dist/types/authExchange";
 import jwtDecode from "jwt-decode";
-import { getAccessToken, setAccessToken } from "src/accessToken";
+import { getAccessToken, setAccessToken } from "src/utils/accessToken";
 import { FC } from "react";
 
 type authStateType = { token: string } | null;
@@ -64,14 +71,18 @@ const addAuthToOperation: AuthConfig<authStateType>["addAuthToOperation"] = ({
 };
 
 const client = createClient({
-  url: "https://localhost:5000/graphql",
+  url: "http://localhost:5000/graphql",
   exchanges: [
+    dedupExchange,
+    cacheExchange,
     authExchange({
       getAuth,
       addAuthToOperation,
       // TODO: error handling
     }),
+    fetchExchange,
   ],
+  fetchOptions: { credentials: "include" },
 });
 
 const UrqlProvider: FC = ({ children }) => {

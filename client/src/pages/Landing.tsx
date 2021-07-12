@@ -3,8 +3,8 @@ import { RouteComponentProps } from "react-router";
 import { useTestQuery } from "src/generated/graphql";
 
 const Landing: React.FC<RouteComponentProps> = ({ history }) => {
-  const { loading, error, data } = useTestQuery();
-  if (loading || !data) return <p>loadingggg</p>;
+  const [{ fetching, error, data }] = useTestQuery();
+  if (fetching || !data) return <p>loadingggg</p>;
   if (error) return <p>errorrr</p>;
   console.log(data);
 

@@ -6,6 +6,6 @@ export const setAccessToken = (token: string) => {
 };
 
 export const getAccessToken = () => {
-  if (accessToken == "") return null;
+  if (accessToken === "") return null;
   return accessToken;
 };

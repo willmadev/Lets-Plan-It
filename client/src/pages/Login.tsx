@@ -1,7 +1,7 @@
 import { FetchResult } from "@apollo/client";
 import React, { FC, useState } from "react";
 import { RouteComponentProps } from "react-router";
-import { setAccessToken } from "src/accessToken";
+import { setAccessToken } from "src/utils/accessToken";
 import {
   AuthFormLayout,
   AuthFormWrapper,
@@ -24,7 +24,7 @@ const Login: FC<RouteComponentProps> = ({ history }) => {
 
   const [message, setMessage] = useState("");
 
-  const [login] = useLoginMutation();
+  const [loginState, login] = useLoginMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputField({ ...inputField, [e.target.name]: e.target.value });
@@ -37,11 +37,9 @@ const Login: FC<RouteComponentProps> = ({ history }) => {
     let response: FetchResult<LoginMutation>;
     try {
       response = await login({
-        variables: {
-          input: {
-            email: inputField.email,
-            password: inputField.password,
-          },
+        input: {
+          email: inputField.email,
+          password: inputField.password,
         },
       });
       console.log(response);
@@ -95,7 +93,11 @@ const Login: FC<RouteComponentProps> = ({ history }) => {
               value={inputField.password}
             />
             <AuthFlashMessage>{message}</AuthFlashMessage>
-            <AuthSubmitButton type="submit" value="Log In" />
+            <AuthSubmitButton
+              type="submit"
+              value="Log In"
+              disabled={loginState.fetching}
+            />
           </AuthForm>
         </AuthFormWrapper>
       </AuthFormLayout>
