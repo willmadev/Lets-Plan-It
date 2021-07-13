@@ -1,7 +1,6 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Landing from "./pages/Landing";
 
-// import App from "./Pages/App";
 import App from "./pages/App";
 import TestAuth from "./pages/TestAuth";
 import Login from "./pages/Login";

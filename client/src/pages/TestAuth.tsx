@@ -2,11 +2,11 @@ import React from "react";
 import { useTestAuthQuery } from "src/generated/graphql";
 
 const TestAuth: React.FC = () => {
-  const { data, loading, error } = useTestAuthQuery({
-    fetchPolicy: "network-only",
+  const [{ data, fetching, error }] = useTestAuthQuery({
+    requestPolicy: "network-only",
   });
 
-  if (loading) return <div>LOADING</div>;
+  if (fetching) return <div>LOADING</div>;
   if (error) {
     console.error(error);
     return <div>{error.message}</div>;

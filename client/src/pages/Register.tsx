@@ -1,7 +1,7 @@
 import { FetchResult } from "@apollo/client";
 import { useState } from "react";
 import { RouteComponentProps } from "react-router";
-import { setAccessToken } from "src/accessToken";
+import { setAccessToken } from "src/utils/auth";
 import {
   AuthFlashMessage,
   AuthForm,
@@ -26,7 +26,7 @@ const Register: React.FC<RouteComponentProps> = ({ history }) => {
 
   const [message, setMessage] = useState("");
 
-  const [register] = useRegisterMutation();
+  const [registerState, register] = useRegisterMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputField({ ...inputField, [e.target.name]: e.target.value });
@@ -44,12 +44,10 @@ const Register: React.FC<RouteComponentProps> = ({ history }) => {
     let response: FetchResult<RegisterMutation>;
     try {
       response = await register({
-        variables: {
-          input: {
-            name: inputField.name,
-            email: inputField.email,
-            password: inputField.password,
-          },
+        input: {
+          name: inputField.name,
+          email: inputField.email,
+          password: inputField.password,
         },
       });
 
@@ -119,7 +117,11 @@ const Register: React.FC<RouteComponentProps> = ({ history }) => {
               value={inputField.repeatPassword}
             />
             <AuthFlashMessage>{message}</AuthFlashMessage>
-            <AuthSubmitButton type="submit" value="Register" />
+            <AuthSubmitButton
+              type="submit"
+              value="Register"
+              disabled={registerState.fetching}
+            />
           </AuthForm>
         </AuthFormWrapper>
       </AuthFormLayout>

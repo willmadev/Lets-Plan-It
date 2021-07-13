@@ -1,10 +1,10 @@
 import { FC, useState } from "react";
 import styled from "styled-components";
+import { History } from "history";
+import { useHistory, useParams } from "react-router-dom";
 import { IconButton, StyledH1, StyledH2 } from "src/styles/app";
 import fonts from "src/theme/font";
-import TaskContainer from "./TaskContainer";
-import { useHistory, useParams } from "react-router-dom";
-import { History } from "history";
+import TaskContainer from "../TaskContainer";
 import { CourseRouteParams } from "src/pages/App";
 import {
   useGetSingleCourseQuery,
@@ -94,25 +94,23 @@ const Course: FC = () => {
   const [addTaskActive, setAddTaskActive] = useState(false);
 
   // course query
-  const { loading: courseLoading, data: courseData } = useGetSingleCourseQuery({
-    variables: { id: courseId },
-  });
+  const [{ fetching: courseFetching, data: courseData }] =
+    useGetSingleCourseQuery({
+      variables: { id: courseId },
+    });
 
   // task query
-  const {
-    error: tasksError,
-    data: tasksData,
-    fetchMore: tasksFetchMore,
-  } = useGetTasksQuery({
-    variables: {
-      limit: 10,
-      filter: { course: courseData?.getSingleCourse?.id },
-    },
-    fetchPolicy: "cache-and-network",
-  });
-  console.log(tasksData);
+  const [{ error: tasksError, data: tasksData }, reexecuteQuery] =
+    useGetTasksQuery({
+      variables: {
+        limit: 10,
+        filter: { course: courseData?.getSingleCourse?.id },
+      },
+      requestPolicy: "cache-and-network",
+    });
+
   //#region loading and no data
-  if (courseLoading) {
+  if (courseFetching) {
     return <p>Loading course...</p>;
   }
   if (!courseData || !courseData.getSingleCourse) {
@@ -155,7 +153,7 @@ const Course: FC = () => {
           <TaskContainer tasks={tasksData.getTasks} />
           <button
             onClick={() =>
-              tasksFetchMore({
+              reexecuteQuery({
                 variables: {
                   cursor: tasksData.getTasks[tasksData.getTasks.length - 1].id,
                   limit: 10,

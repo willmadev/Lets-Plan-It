@@ -3,13 +3,7 @@ import styled from "styled-components";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 import "react-day-picker/lib/style.css";
 import fonts from "src/theme/font";
-import {
-  Course,
-  CreateTaskMutation,
-  GetTasksDocument,
-  useCreateTaskMutation,
-} from "src/generated/graphql";
-import { FetchResult } from "@apollo/client";
+import { Course, useCreateTaskMutation } from "src/generated/graphql";
 
 const AddTaskContainer = styled.div`
   display: flex;
@@ -91,6 +85,7 @@ const CancelButton = styled.button`
     background-color: #acacac;
   }
 `;
+
 interface AddTaskProps {
   cancel: Function;
   course?: Course | null;
@@ -105,62 +100,55 @@ const AddTask: FC<AddTaskProps> = ({ cancel, course }) => {
 
   useEffect(() => {
     if (course) {
-      setNewTask({
-        ...newTask,
-        course: { courseName: course.courseName, id: course.id },
+      setNewTask((task) => {
+        return { ...task, course: course };
       });
     }
-  }, []);
+  }, [course]);
 
   // create task mutation
-  const [createTask] = useCreateTaskMutation({
-    // update cache to add newly created task
-    update: (cache, { data }) => {
-      if (!data) {
-        return;
-      }
+  const [, createTask] = useCreateTaskMutation();
+  //   {
+  //     // update cache to add newly created task
+  //     update: (cache, { data }) => {
+  //       if (!data) {
+  //         return;
+  //       }
 
-      if (data.createTask.__typename === "MutateTaskError") {
-        return;
-      }
+  //       if (data.createTask.__typename === "MutateTaskError") {
+  //         return;
+  //       }
 
-      // const { getTasks } = cache.readQuery({
-      //   query: GetTasksDocument,
-      // }) ?? { getTask: null };
+  //       // const { getTasks } = cache.readQuery({
+  //       //   query: GetTasksDocument,
+  //       // }) ?? { getTask: null };
 
-      // const newCache = [...getTasks, data?.createTask];
+  //       // const newCache = [...getTasks, data?.createTask];
 
-      // add completed field
-      let completedFieldData = data.createTask;
-      cache.writeQuery({
-        query: GetTasksDocument,
-        data: { getTasks: [completedFieldData] },
-      });
+  //       // add completed field
+  //       let completedFieldData = data.createTask;
+  //       cache.writeQuery({
+  //         query: GetTasksDocument,
+  //         data: { getTasks: [completedFieldData] },
+  //       });
 
-      console.log("new cache", completedFieldData);
-    },
-  });
+  //       console.log("new cache", completedFieldData);
+  //     },
+  //   }
 
   const submitTask = async () => {
     console.log("Submitting new task");
 
     // input validation
 
-    let response: FetchResult<
-      CreateTaskMutation,
-      Record<string, any>,
-      Record<string, any>
-    >;
+    // let response;
     try {
-      response = await createTask({
-        variables: {
-          input: {
-            course: newTask.course.id,
-            due: newTask.due,
-            title: newTask.title,
-          },
+      const response = await createTask({
+        input: {
+          course: newTask.course.id,
+          due: newTask.due,
+          title: newTask.title,
         },
-        // refetchQueries: [{ query: GetTasksDocument }],
       });
       console.log("create task response:", response);
       setNewTask({
