@@ -1,9 +1,9 @@
 import { FC } from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
-import Header from "src/components/Header";
+import styled from "styled-components";
+import Header from "src/components/Header/Header";
 import Sidebar from "src/components/Sidebar";
 import Dashboard from "src/components/Dashboard";
-import styled from "styled-components";
 import Course from "src/components/Course";
 import Courses from "src/components/Courses";
 

@@ -38,19 +38,16 @@ interface TaskItemProps {
 }
 
 const TaskItem: FC<TaskItemProps> = ({ task }) => {
-  console.log(task);
   const [completed, setCompleted] = useState(task.completed || false);
-  const [updateTask] = useUpdateTaskMutation();
+  const [, updateTask] = useUpdateTaskMutation();
 
   const updateCompleted = async (completed: boolean) => {
     let response;
     try {
       response = await updateTask({
-        variables: {
-          input: {
-            id: task.id,
-            completed: completed,
-          },
+        input: {
+          id: task.id,
+          completed: completed,
         },
       });
       console.log("complete task response:", response);
@@ -74,24 +71,4 @@ const TaskItem: FC<TaskItemProps> = ({ task }) => {
   );
 };
 
-const StyledTaskContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-`;
-
-interface TaskContainerProps {
-  tasks: Task[];
-}
-
-const TaskContainer: FC<TaskContainerProps> = ({ tasks }) => {
-  return (
-    <StyledTaskContainer>
-      {tasks.map((task) => {
-        return <TaskItem task={task} key={task.id} />;
-      })}
-    </StyledTaskContainer>
-  );
-};
-
-export default TaskContainer;
+export default TaskItem;

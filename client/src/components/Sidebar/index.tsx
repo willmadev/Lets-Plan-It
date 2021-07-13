@@ -22,7 +22,7 @@ interface SidebarProps {
 }
 
 const Sidebar: FC<SidebarProps> = ({ basePath }) => {
-  const { loading, data } = useGetCoursesQuery();
+  const [{ fetching, data }] = useGetCoursesQuery();
   return (
     <SidebarContainer>
       <SidebarMenu>
@@ -37,7 +37,7 @@ const Sidebar: FC<SidebarProps> = ({ basePath }) => {
       <hr />
       <SidebarMenu>
         {(() => {
-          if (loading) {
+          if (fetching) {
             return <p>Loading...</p>;
           }
           if (!data || !data.getCourses) {

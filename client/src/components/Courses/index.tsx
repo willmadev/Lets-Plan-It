@@ -87,15 +87,15 @@ interface CoursesProps {
 }
 
 const Courses: FC<CoursesProps> = ({ basePath }) => {
-  const { loading, data } = useGetCoursesQuery();
+  const [{ fetching, data }] = useGetCoursesQuery();
 
-  if (loading) {
+  if (fetching) {
     return <p>Loading...</p>;
   }
-
   if (!data || !data.getCourses) {
     return <p>No courses found</p>;
   }
+
   return (
     <CoursesContainer>
       <StyledH1>Courses</StyledH1>
