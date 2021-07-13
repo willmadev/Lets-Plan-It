@@ -108,7 +108,6 @@ const Course: FC = () => {
       },
       requestPolicy: "cache-and-network",
     });
-  console.log(tasksData);
 
   //#region loading and no data
   if (courseFetching) {

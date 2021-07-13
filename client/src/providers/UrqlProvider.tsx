@@ -8,24 +8,24 @@ import {
 } from "urql";
 import { authExchange } from "@urql/exchange-auth";
 import { AuthConfig } from "@urql/exchange-auth/dist/types/authExchange";
-import jwtDecode from "jwt-decode";
-import { getAccessToken, setAccessToken } from "src/utils/accessToken";
+import {
+  checkJwtValidity,
+  getAccessToken,
+  setAccessToken,
+} from "src/utils/auth";
 import { FC } from "react";
 
 type authStateType = { token: string } | null;
-type decodedAccessTokenType = { userId: string; iat: number; exp: number };
 
 const getAuth: AuthConfig<authStateType>["getAuth"] = async ({
   authState,
 }: {
   authState: authStateType;
 }) => {
-  if (!authState) {
-    const token = getAccessToken();
-    if (token) {
-      const decodedToken = jwtDecode(token) as decodedAccessTokenType;
-      if (!(Date.now() >= decodedToken.exp * 1000)) return { token };
-    }
+  const token = authState ? authState.token : getAccessToken();
+
+  if (token && checkJwtValidity(token)) {
+    return { token };
   }
 
   // refresh token
@@ -70,6 +70,20 @@ const addAuthToOperation: AuthConfig<authStateType>["addAuthToOperation"] = ({
   });
 };
 
+const didAuthError: AuthConfig<authStateType>["didAuthError"] = ({
+  error,
+  authState,
+}) => {
+  return error.graphQLErrors.some((e) => e.message === "Not authenticated");
+};
+
+const willAuthError: AuthConfig<authStateType>["willAuthError"] = ({
+  authState,
+}) => {
+  if (!authState?.token || !checkJwtValidity(authState.token)) return true;
+  return false;
+};
+
 const client = createClient({
   url: "http://localhost:5000/graphql",
   exchanges: [
@@ -78,7 +92,8 @@ const client = createClient({
     authExchange({
       getAuth,
       addAuthToOperation,
-      // TODO: error handling
+      didAuthError,
+      willAuthError,
     }),
     fetchExchange,
   ],

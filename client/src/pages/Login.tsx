@@ -1,7 +1,7 @@
 import { FetchResult } from "@apollo/client";
 import React, { FC, useState } from "react";
 import { RouteComponentProps } from "react-router";
-import { setAccessToken } from "src/utils/accessToken";
+import { setAccessToken } from "src/utils/auth";
 import {
   AuthFormLayout,
   AuthFormWrapper,

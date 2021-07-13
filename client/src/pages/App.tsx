@@ -30,7 +30,6 @@ const PageContent = styled.div`
 
 const App: FC = () => {
   const { path } = useRouteMatch();
-  console.log(path);
   return (
     <PageWrapper>
       <Header />
