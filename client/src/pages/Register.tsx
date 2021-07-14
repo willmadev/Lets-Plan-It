@@ -1,6 +1,6 @@
-import { FetchResult } from "@apollo/client";
 import { useState } from "react";
 import { RouteComponentProps } from "react-router";
+import { OperationResult } from "urql";
 import { setAccessToken } from "src/utils/auth";
 import {
   AuthFlashMessage,
@@ -13,7 +13,12 @@ import {
   AuthTitle,
   AuthTitleContainer,
 } from "src/styles/auth";
-import { RegisterMutation, useRegisterMutation } from "src/generated/graphql";
+import {
+  Exact,
+  RegisterInput,
+  RegisterMutation,
+  useRegisterMutation,
+} from "src/generated/graphql";
 import { StyledLink, StyledParagraph } from "src/styles/global";
 
 const Register: React.FC<RouteComponentProps> = ({ history }) => {
@@ -41,7 +46,10 @@ const Register: React.FC<RouteComponentProps> = ({ history }) => {
       return;
     }
 
-    let response: FetchResult<RegisterMutation>;
+    let response: OperationResult<
+      RegisterMutation,
+      Exact<{ input: RegisterInput }>
+    >;
     try {
       response = await register({
         input: {
