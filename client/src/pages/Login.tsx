@@ -1,4 +1,3 @@
-import { FetchResult } from "@apollo/client";
 import React, { FC, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { setAccessToken } from "src/utils/auth";
@@ -13,8 +12,14 @@ import {
   AuthPageWrapper,
   AuthTitleContainer,
 } from "src/styles/auth";
-import { LoginMutation, useLoginMutation } from "src/generated/graphql";
+import {
+  Exact,
+  LoginInput,
+  LoginMutation,
+  useLoginMutation,
+} from "src/generated/graphql";
 import { StyledParagraph, StyledLink } from "src/styles/global";
+import { OperationResult } from "urql";
 
 const Login: FC<RouteComponentProps> = ({ history }) => {
   const [inputField, setInputField] = useState({
@@ -34,7 +39,12 @@ const Login: FC<RouteComponentProps> = ({ history }) => {
     e.preventDefault();
 
     // validate input
-    let response: FetchResult<LoginMutation>;
+    let response: OperationResult<
+      LoginMutation,
+      Exact<{
+        input: LoginInput;
+      }>
+    >;
     try {
       response = await login({
         input: {
