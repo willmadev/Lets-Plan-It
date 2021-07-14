@@ -11,6 +11,7 @@ import { AuthConfig } from "@urql/exchange-auth/dist/types/authExchange";
 import {
   checkJwtValidity,
   getAccessToken,
+  logout,
   setAccessToken,
 } from "src/utils/auth";
 import { FC } from "react";
@@ -40,7 +41,8 @@ const getAuth: AuthConfig<authStateType>["getAuth"] = async ({
   }
 
   // logout
-  console.error("TODO-LOGOUT");
+  console.log("Logging out");
+  logout();
 
   return null;
 };
@@ -80,6 +82,7 @@ const didAuthError: AuthConfig<authStateType>["didAuthError"] = ({
 const willAuthError: AuthConfig<authStateType>["willAuthError"] = ({
   authState,
 }) => {
+  // invalid access token
   if (!authState?.token || !checkJwtValidity(authState.token)) return true;
   return false;
 };

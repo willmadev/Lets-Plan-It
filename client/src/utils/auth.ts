@@ -23,4 +23,10 @@ const checkJwtValidity = (token: string) => {
   return !(Date.now() >= decoded.exp * 1000);
 };
 
-export { setAccessToken, getAccessToken, checkJwtValidity };
+const logout = () => {
+  setAccessToken("");
+
+  document.cookie = "rtk=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+};
+
+export { setAccessToken, getAccessToken, checkJwtValidity, logout };
