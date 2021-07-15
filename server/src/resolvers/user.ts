@@ -4,15 +4,19 @@ import {
   createUnionType,
   Ctx,
   Field,
+  ID,
   InputType,
   Mutation,
   ObjectType,
+  Query,
   Resolver,
+  UseMiddleware,
 } from "type-graphql";
 import { hash, compare } from "bcrypt";
 import { createAccessToken, sendRefreshToken } from "../helpers/auth";
 import { SALT_ROUNDS } from "../helpers/env";
-import { MyContext } from "src/helpers/types";
+import { MyContext } from "../helpers/types";
+import { isAuth } from "../middlewares/isAuth";
 
 @InputType()
 class RegisterInput {
@@ -40,7 +44,7 @@ class AuthPayload {
     this.accessToken = accessToken;
   }
 
-  @Field()
+  @Field(() => ID)
   id!: Number;
 
   @Field()
@@ -77,6 +81,12 @@ class LoginInput {
 
 @Resolver()
 export class UserResolver {
+  @UseMiddleware(isAuth)
+  @Query(() => User)
+  async getUser(@Ctx() { user }: MyContext) {
+    return user;
+  }
+
   @Mutation(() => AuthResult)
   async register(
     @Ctx() { res }: MyContext,
