@@ -1,3 +1,4 @@
+import { FC } from "react";
 import {
   cacheExchange,
   createClient,
@@ -9,12 +10,11 @@ import {
 import { authExchange } from "@urql/exchange-auth";
 import { AuthConfig } from "@urql/exchange-auth/dist/types/authExchange";
 import {
-  checkJwtValidity,
-  getAccessToken,
-  logout,
+  validateAccessToken,
+  refresh,
   setAccessToken,
+  logout,
 } from "src/utils/auth";
-import { FC } from "react";
 
 type authStateType = { token: string } | null;
 
@@ -23,35 +23,34 @@ const getAuth: AuthConfig<authStateType>["getAuth"] = async ({
 }: {
   authState: authStateType;
 }) => {
-  const token = authState ? authState.token : getAccessToken();
+  console.log("auth exchange getAuth");
+  console.log({ authState });
 
-  if (token && checkJwtValidity(token)) {
-    return { token };
+  // no token (initial load) or invalid token (expired)
+  if (!authState?.token || !validateAccessToken(authState.token)) {
+    const accessToken = await refresh();
+    console.log({ accessToken });
+    if (accessToken) {
+      setAccessToken(accessToken);
+      return { token: accessToken };
+    }
+
+    console.log("Logging out");
+    logout();
+
+    return null;
   }
 
-  // refresh token
-  const res = await fetch("http://localhost:5000/refresh_token", {
-    credentials: "include",
-    method: "POST",
-  });
-  const refreshTokenResponse = await res.json();
-  if (refreshTokenResponse.success && refreshTokenResponse.accessToken) {
-    setAccessToken(refreshTokenResponse.accessToken);
-    return { token: refreshTokenResponse.accessToken };
-  }
-
-  // logout
-  console.log("Logging out");
-  logout();
-
-  return null;
+  return authState;
 };
 
 const addAuthToOperation: AuthConfig<authStateType>["addAuthToOperation"] = ({
   authState,
   operation,
 }) => {
+  console.log("auth exchange addAuthToOperation");
   if (!authState || !authState.token) {
+    console.log("no authstate");
     return operation;
   }
 
@@ -83,11 +82,11 @@ const willAuthError: AuthConfig<authStateType>["willAuthError"] = ({
   authState,
 }) => {
   // invalid access token
-  if (!authState?.token || !checkJwtValidity(authState.token)) return true;
+  if (!authState?.token || !validateAccessToken(authState.token)) return true;
   return false;
 };
 
-const client = createClient({
+export const client = createClient({
   url: "http://localhost:5000/graphql",
   exchanges: [
     dedupExchange,

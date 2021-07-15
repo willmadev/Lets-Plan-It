@@ -1,5 +1,7 @@
 import React, { FC, useState } from "react";
 import { RouteComponentProps } from "react-router";
+import { OperationResult } from "urql";
+import { useDispatch } from "react-redux";
 import { setAccessToken } from "src/utils/auth";
 import {
   AuthFormLayout,
@@ -19,13 +21,15 @@ import {
   useLoginMutation,
 } from "src/generated/graphql";
 import { StyledParagraph, StyledLink } from "src/styles/global";
-import { OperationResult } from "urql";
+import { setUser } from "src/store/user/user.slice";
 
 const Login: FC<RouteComponentProps> = ({ history }) => {
   const [inputField, setInputField] = useState({
     email: "",
     password: "",
   });
+
+  const dispatch = useDispatch();
 
   const [message, setMessage] = useState("");
 
@@ -65,6 +69,13 @@ const Login: FC<RouteComponentProps> = ({ history }) => {
     if (response.data.login.__typename === "AuthPayload") {
       setAccessToken(response.data.login!.accessToken);
       setMessage("Successfully Logged In");
+      dispatch(
+        setUser({
+          email: response.data.login.email,
+          id: response.data.login.id,
+          name: response.data.login.name,
+        })
+      );
       history.push("/app");
       return;
     }

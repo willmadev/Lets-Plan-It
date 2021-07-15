@@ -1,11 +1,12 @@
 import { FC } from "react";
-import { Route, Switch, useRouteMatch } from "react-router-dom";
+import { Switch, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import Header from "src/components/Header/Header";
 import Sidebar from "src/components/Sidebar";
 import Dashboard from "src/components/Dashboard";
 import Course from "src/components/Course";
 import Courses from "src/components/Courses";
+import ProtectedRoute from "src/components/ProtectedRoute";
 
 export interface CourseRouteParams {
   courseId: string;
@@ -36,13 +37,16 @@ const App: FC = () => {
       <Sidebar basePath={path} />
       <PageContent>
         <Switch>
-          <Route
+          <ProtectedRoute
             exact
             path={`${path}/courses`}
             render={() => <Courses basePath={path} />}
           />
-          <Route path={`${path}/courses/:courseId`} component={Course} />
-          <Route path={path} component={Dashboard} />
+          <ProtectedRoute
+            path={`${path}/courses/:courseId`}
+            component={Course}
+          />
+          <ProtectedRoute path={path} component={Dashboard} />
         </Switch>
       </PageContent>
     </PageWrapper>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { OperationResult } from "urql";
+import { useDispatch } from "react-redux";
 import { setAccessToken } from "src/utils/auth";
 import {
   AuthFlashMessage,
@@ -20,8 +21,10 @@ import {
   useRegisterMutation,
 } from "src/generated/graphql";
 import { StyledLink, StyledParagraph } from "src/styles/global";
+import { setUser } from "src/store/user/user.slice";
 
 const Register: React.FC<RouteComponentProps> = ({ history }) => {
+  const dispatch = useDispatch();
   const [inputField, setInputField] = useState({
     name: "",
     email: "",
@@ -73,6 +76,7 @@ const Register: React.FC<RouteComponentProps> = ({ history }) => {
     if (response.data.register.__typename === "AuthPayload") {
       setAccessToken(response.data.register!.accessToken);
       setMessage("Successfully Registered");
+      dispatch(setUser(response.data.register));
       history.push("/app");
       return;
     }

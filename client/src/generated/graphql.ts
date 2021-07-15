@@ -24,7 +24,7 @@ export type AuthError = {
 
 export type AuthPayload = {
   __typename?: 'AuthPayload';
-  id: Scalars['Float'];
+  id: Scalars['ID'];
   email: Scalars['String'];
   name: Scalars['String'];
   accessToken: Scalars['String'];
@@ -145,6 +145,7 @@ export type Query = {
   testAuth: Scalars['String'];
   getTasks: Array<Task>;
   getSingleTask?: Maybe<Task>;
+  getUser: User;
   getCourses?: Maybe<Array<Course>>;
   getSingleCourse?: Maybe<Course>;
 };
@@ -202,6 +203,13 @@ export type UpdateTaskInput = {
   completed?: Maybe<Scalars['Boolean']>;
 };
 
+export type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  email: Scalars['String'];
+};
+
 export type LoginMutationVariables = Exact<{
   input: LoginInput;
 }>;
@@ -240,6 +248,17 @@ export type TestAuthQueryVariables = Exact<{ [key: string]: never; }>;
 export type TestAuthQuery = (
   { __typename?: 'Query' }
   & Pick<Query, 'testAuth'>
+);
+
+export type GetUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUserQuery = (
+  { __typename?: 'Query' }
+  & { getUser: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'email'>
+  ) }
 );
 
 export type CreateCourseMutationVariables = Exact<{
@@ -527,6 +546,19 @@ export const TestAuthDocument = gql`
 export function useTestAuthQuery(options: Omit<Urql.UseQueryArgs<TestAuthQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<TestAuthQuery>({ query: TestAuthDocument, ...options });
 };
+export const GetUserDocument = gql`
+    query GetUser {
+  getUser {
+    id
+    name
+    email
+  }
+}
+    `;
+
+export function useGetUserQuery(options: Omit<Urql.UseQueryArgs<GetUserQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetUserQuery>({ query: GetUserDocument, ...options });
+};
 export const CreateCourseDocument = gql`
     mutation CreateCourse($input: CreateCourseInput!, $taskCountFilter: TaskFilterInput) {
   createCourse(input: $input) {
@@ -642,3 +674,169 @@ export const TestDocument = gql`
 export function useTestQuery(options: Omit<Urql.UseQueryArgs<TestQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<TestQuery>({ query: TestDocument, ...options });
 };
+export const CourseFragment = gql`
+    fragment CourseFragment on Course {
+  __typename
+  id
+  courseName
+  color
+  taskCount(filter: $taskCountFilter)
+}
+    `;
+export const MutateCourseFragment = gql`
+    fragment MutateCourseFragment on MutateCourseResult {
+  ... on Course {
+    ...CourseFragment
+  }
+  ... on MutateCourseError {
+    __typename
+    field
+    message
+  }
+}
+    ${CourseFragment}`;
+export const TaskFragment = gql`
+    fragment TaskFragment on Task {
+  __typename
+  id
+  title
+  course {
+    id
+    courseName
+    color
+    taskCount
+  }
+  description
+  due
+  completed
+}
+    `;
+export const MutateTaskFragment = gql`
+    fragment MutateTaskFragment on MutateTaskResult {
+  ... on Task {
+    ...TaskFragment
+  }
+  ... on MutateTaskError {
+    __typename
+    field
+    message
+  }
+}
+    ${TaskFragment}`;
+export const Login = gql`
+    mutation Login($input: LoginInput!) {
+  login(input: $input) {
+    ... on AuthPayload {
+      id
+      email
+      name
+      accessToken
+    }
+    ... on AuthError {
+      field
+      message
+    }
+  }
+}
+    `;
+export const Register = gql`
+    mutation Register($input: RegisterInput!) {
+  register(input: $input) {
+    ... on AuthPayload {
+      id
+      email
+      name
+      accessToken
+    }
+    ... on AuthError {
+      field
+      message
+    }
+  }
+}
+    `;
+export const TestAuth = gql`
+    query TestAuth {
+  testAuth
+}
+    `;
+export const GetUser = gql`
+    query GetUser {
+  getUser {
+    id
+    name
+    email
+  }
+}
+    `;
+export const CreateCourse = gql`
+    mutation CreateCourse($input: CreateCourseInput!, $taskCountFilter: TaskFilterInput) {
+  createCourse(input: $input) {
+    ...MutateCourseFragment
+  }
+}
+    ${MutateCourseFragment}`;
+export const UpdateCourse = gql`
+    mutation UpdateCourse($input: UpdateCourseInput!, $taskCountFilter: TaskFilterInput) {
+  updateCourse(input: $input) {
+    ...MutateCourseFragment
+  }
+}
+    ${MutateCourseFragment}`;
+export const DeleteCourse = gql`
+    mutation DeleteCourse($id: ID!) {
+  deleteCourse(id: $id)
+}
+    `;
+export const GetCourses = gql`
+    query GetCourses($taskCountFilter: TaskFilterInput) {
+  getCourses {
+    ...CourseFragment
+  }
+}
+    ${CourseFragment}`;
+export const GetSingleCourse = gql`
+    query GetSingleCourse($id: ID!, $taskCountFilter: TaskFilterInput) {
+  getSingleCourse(id: $id) {
+    ...CourseFragment
+  }
+}
+    ${CourseFragment}`;
+export const CreateTask = gql`
+    mutation CreateTask($input: CreateTaskInput!) {
+  createTask(input: $input) {
+    ...MutateTaskFragment
+  }
+}
+    ${MutateTaskFragment}`;
+export const UpdateTask = gql`
+    mutation UpdateTask($input: UpdateTaskInput!) {
+  updateTask(input: $input) {
+    ...MutateTaskFragment
+  }
+}
+    ${MutateTaskFragment}`;
+export const DeleteTask = gql`
+    mutation DeleteTask($id: ID!) {
+  deleteTask(id: $id)
+}
+    `;
+export const GetTasks = gql`
+    query GetTasks($filter: TaskFilterInput!, $cursor: ID, $limit: Int) {
+  getTasks(filter: $filter, cursor: $cursor, limit: $limit) {
+    ...TaskFragment
+  }
+}
+    ${TaskFragment}`;
+export const GetSingleTask = gql`
+    query GetSingleTask($id: ID!) {
+  getSingleTask(id: $id) {
+    ...TaskFragment
+  }
+}
+    ${TaskFragment}`;
+export const Test = gql`
+    query Test {
+  hello
+}
+    `;
