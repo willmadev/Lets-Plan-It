@@ -16,10 +16,12 @@ import {
   faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 import { ThemeProvider } from "styled-components";
+import { BrowserRouter } from "react-router-dom";
 import theme from "./theme/theme";
 import UrqlProvider from "./providers/UrqlProvider";
 import Router from "./Router";
 import "./index.css";
+import ReduxProvider from "./providers/ReduxProvider";
 
 // fontawesome
 library.add(
@@ -39,10 +41,14 @@ library.add(
 );
 
 ReactDOM.render(
-  <UrqlProvider>
-    <ThemeProvider theme={theme}>
-      <Router />
-    </ThemeProvider>
-  </UrqlProvider>,
+  <ReduxProvider>
+    <BrowserRouter>
+      <UrqlProvider>
+        <ThemeProvider theme={theme}>
+          <Router />
+        </ThemeProvider>
+      </UrqlProvider>
+    </BrowserRouter>
+  </ReduxProvider>,
   document.getElementById("root")
 );
