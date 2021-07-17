@@ -92,21 +92,23 @@ const Course: FC = () => {
   const history = useHistory();
   const { courseId } = useParams<CourseRouteParams>();
   const [addTaskActive, setAddTaskActive] = useState(false);
+  const [limit, setLimit] = useState(10);
 
   // course query
   const [{ fetching: courseFetching, data: courseData }] =
     useGetSingleCourseQuery({
       variables: { id: courseId },
+      requestPolicy: "cache-and-network",
     });
 
   // task query
   const [{ error: tasksError, data: tasksData }, reexecuteQuery] =
     useGetTasksQuery({
       variables: {
-        limit: 10,
+        limit: limit,
         filter: { course: courseData?.getSingleCourse?.id },
       },
-      requestPolicy: "cache-and-network",
+      requestPolicy: "network-only",
     });
 
   //#region loading and no data
@@ -152,14 +154,10 @@ const Course: FC = () => {
           />
           <TaskContainer tasks={tasksData.getTasks} />
           <button
-            onClick={() =>
-              reexecuteQuery({
-                variables: {
-                  cursor: tasksData.getTasks[tasksData.getTasks.length - 1].id,
-                  limit: 10,
-                },
-              })
-            }
+            onClick={() => {
+              setLimit(limit + 10);
+              reexecuteQuery({});
+            }}
           >
             Load more
           </button>
