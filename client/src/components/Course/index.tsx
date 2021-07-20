@@ -11,6 +11,7 @@ import {
   useGetTasksQuery,
 } from "src/generated/graphql";
 import AddTask from "./AddTask";
+import { useEffect } from "react";
 
 const CourseContainer = styled.div`
   width: 980px;
@@ -88,7 +89,11 @@ const CourseTitleContainer = styled.div`
   justify-content: space-between;
 `;
 
-const Course: FC = () => {
+interface CourseProps {
+  scrolledToBottom: boolean;
+}
+
+const Course: FC<CourseProps> = ({ scrolledToBottom }) => {
   const history = useHistory();
   const { courseId } = useParams<CourseRouteParams>();
   const [addTaskActive, setAddTaskActive] = useState(false);
@@ -110,6 +115,17 @@ const Course: FC = () => {
       },
       requestPolicy: "network-only",
     });
+
+  const fetchMore = () => reexecuteQuery();
+
+  // fetch more when scrolled to bottom
+  useEffect(() => {
+    if (scrolledToBottom) {
+      setLimit((limit) => limit + 10);
+      // reexecuteQuery();
+      fetchMore();
+    }
+  }, [scrolledToBottom]);
 
   //#region loading and no data
   if (courseFetching) {
@@ -153,22 +169,10 @@ const Course: FC = () => {
             count={courseData.getSingleCourse.taskCount}
           />
           <TaskContainer tasks={tasksData.getTasks} />
-          <button
-            onClick={() => {
-              setLimit(limit + 10);
-              reexecuteQuery({});
-            }}
-          >
-            Load more
-          </button>
         </TaskListContainer>
       ) : (
         <p>No tasks</p>
       )}
-      {/* <TaskListContainer>
-        <TaskListTitle title="Completed" count={3} />
-        <TaskContainer />
-      </TaskListContainer> */}
     </CourseContainer>
   );
 };

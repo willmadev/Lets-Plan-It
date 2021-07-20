@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Switch, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import Header from "src/components/Header/Header";
@@ -31,11 +31,24 @@ const PageContent = styled.div`
 
 const App: FC = () => {
   const { path } = useRouteMatch();
+
+  const [scrolledToBottom, setScrolledToBottom] = useState(false);
+  const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+    if (
+      e.currentTarget.scrollHeight - e.currentTarget.scrollTop ===
+      e.currentTarget.clientHeight
+    ) {
+      console.log("scrolled to bottom");
+      setScrolledToBottom(true);
+    } else {
+      setScrolledToBottom(false);
+    }
+  };
   return (
     <PageWrapper>
       <Header />
       <Sidebar basePath={path} />
-      <PageContent>
+      <PageContent onScroll={(e) => handleScroll(e)}>
         <Switch>
           <ProtectedRoute
             exact
@@ -44,7 +57,7 @@ const App: FC = () => {
           />
           <ProtectedRoute
             path={`${path}/courses/:courseId`}
-            component={Course}
+            render={() => <Course scrolledToBottom={scrolledToBottom} />}
           />
           <ProtectedRoute path={path} component={Dashboard} />
         </Switch>
