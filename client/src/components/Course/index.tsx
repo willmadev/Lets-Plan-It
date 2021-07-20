@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import styled from "styled-components";
 import { History } from "history";
 import { useHistory, useParams } from "react-router-dom";
@@ -11,7 +11,6 @@ import {
   useGetTasksQuery,
 } from "src/generated/graphql";
 import AddTask from "./AddTask";
-import { useEffect } from "react";
 
 const CourseContainer = styled.div`
   width: 980px;
@@ -116,15 +115,13 @@ const Course: FC<CourseProps> = ({ scrolledToBottom }) => {
       requestPolicy: "network-only",
     });
 
-  const fetchMore = () => reexecuteQuery();
-
   // fetch more when scrolled to bottom
   useEffect(() => {
     if (scrolledToBottom) {
       setLimit((limit) => limit + 10);
-      // reexecuteQuery();
-      fetchMore();
+      reexecuteQuery();
     }
+    // eslint-disable-next-line
   }, [scrolledToBottom]);
 
   //#region loading and no data

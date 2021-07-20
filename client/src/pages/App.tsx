@@ -35,10 +35,9 @@ const App: FC = () => {
   const [scrolledToBottom, setScrolledToBottom] = useState(false);
   const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
     if (
-      e.currentTarget.scrollHeight - e.currentTarget.scrollTop ===
+      e.currentTarget.scrollHeight - e.currentTarget.scrollTop - 5 <=
       e.currentTarget.clientHeight
     ) {
-      console.log("scrolled to bottom");
       setScrolledToBottom(true);
     } else {
       setScrolledToBottom(false);
