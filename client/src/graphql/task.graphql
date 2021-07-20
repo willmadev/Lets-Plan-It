@@ -16,7 +16,11 @@ mutation DeleteTask($id: ID!) {
 
 query GetTasks($filter: TaskFilterInput!, $cursor: ID, $limit: Int) {
   getTasks(filter: $filter, cursor: $cursor, limit: $limit) {
-    ...TaskFragment
+    tasks {
+      ...TaskFragment
+    }
+    hasMore
+    cursor
   }
 }
 

@@ -66,6 +66,13 @@ export type CreateTaskInput = {
 };
 
 
+export type GetTasksResult = {
+  __typename?: 'GetTasksResult';
+  tasks: Array<Task>;
+  hasMore: Scalars['Boolean'];
+  cursor: Scalars['ID'];
+};
+
 export type LoginInput = {
   email: Scalars['String'];
   password: Scalars['String'];
@@ -143,7 +150,7 @@ export type Query = {
   __typename?: 'Query';
   hello: Scalars['String'];
   testAuth: Scalars['String'];
-  getTasks: Array<Task>;
+  getTasks: GetTasksResult;
   getSingleTask?: Maybe<Task>;
   getUser: User;
   getCourses?: Maybe<Array<Course>>;
@@ -400,10 +407,14 @@ export type GetTasksQueryVariables = Exact<{
 
 export type GetTasksQuery = (
   { __typename?: 'Query' }
-  & { getTasks: Array<(
-    { __typename?: 'Task' }
-    & TaskFragmentFragment
-  )> }
+  & { getTasks: (
+    { __typename?: 'GetTasksResult' }
+    & Pick<GetTasksResult, 'hasMore' | 'cursor'>
+    & { tasks: Array<(
+      { __typename?: 'Task' }
+      & TaskFragmentFragment
+    )> }
+  ) }
 );
 
 export type GetSingleTaskQueryVariables = Exact<{
@@ -646,7 +657,11 @@ export function useDeleteTaskMutation() {
 export const GetTasksDocument = gql`
     query GetTasks($filter: TaskFilterInput!, $cursor: ID, $limit: Int) {
   getTasks(filter: $filter, cursor: $cursor, limit: $limit) {
-    ...TaskFragment
+    tasks {
+      ...TaskFragment
+    }
+    hasMore
+    cursor
   }
 }
     ${TaskFragmentFragmentDoc}`;
@@ -824,7 +839,11 @@ export const DeleteTask = gql`
 export const GetTasks = gql`
     query GetTasks($filter: TaskFilterInput!, $cursor: ID, $limit: Int) {
   getTasks(filter: $filter, cursor: $cursor, limit: $limit) {
-    ...TaskFragment
+    tasks {
+      ...TaskFragment
+    }
+    hasMore
+    cursor
   }
 }
     ${TaskFragment}`;

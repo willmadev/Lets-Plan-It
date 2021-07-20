@@ -14,9 +14,9 @@ import {
 } from "type-graphql";
 import { Task } from "../entity/Task";
 import { isAuth } from "../middlewares/isAuth";
-import { MyContext } from "../helpers/types";
+import { MyContext } from "../utils/types";
 import { Course } from "../entity/Course";
-import { getTasks } from "../helpers/tasks";
+import { getTasks } from "../utils/tasks";
 
 @InputType()
 class CreateTaskInput {
@@ -81,18 +81,41 @@ export class TaskFilterInput {
   course: number;
 }
 
+@ObjectType()
+class GetTasksResult {
+  @Field(() => [Task])
+  tasks: Task[];
+
+  @Field()
+  hasMore: boolean;
+
+  @Field(() => ID)
+  cursor: number;
+}
+
 @Resolver()
 export class TaskResolver {
   @UseMiddleware(isAuth)
-  @Query(() => [Task])
+  @Query(() => GetTasksResult)
   async getTasks(
     @Ctx() { user }: MyContext,
     @Arg("limit", () => Int, { defaultValue: 50 }) limit: number,
     @Arg("cursor", () => ID, { nullable: true }) cursor: number,
     @Arg("filter", () => TaskFilterInput, { nullable: true })
     filter: TaskFilterInput
-  ): Promise<Array<Task> | undefined> {
-    return await getTasks({ user, limit, cursor, filter });
+  ): Promise<GetTasksResult | undefined> {
+    const tasks = await getTasks({ user, limit: limit + 1, cursor, filter });
+
+    const hasMore = tasks.length === limit + 1;
+
+    // remove hasMore test
+    if (hasMore) {
+      tasks.pop();
+    }
+
+    const newCursor = tasks[tasks.length - 1].id;
+
+    return { tasks, hasMore, cursor: newCursor };
   }
 
   @UseMiddleware(isAuth)
@@ -101,7 +124,17 @@ export class TaskResolver {
     @Ctx() { user }: MyContext,
     @Arg("id", () => ID) id: number
   ): Promise<Task | undefined> {
-    return await Task.findOne({ where: { id, user: user } });
+    const task = await Task.findOne({
+      join: {
+        alias: "task",
+        leftJoinAndSelect: {
+          course: "task.course",
+        },
+      },
+      where: { id, user: user },
+    });
+    console.log(task);
+    return task;
   }
 
   @UseMiddleware(isAuth)

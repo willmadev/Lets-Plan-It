@@ -31,7 +31,7 @@ const DashboardCourseCard: FC<DashboardCourseCardProps> = ({ course }) => {
     <StyledCourseCard>
       <StyledH2>{course.courseName}</StyledH2>
       {data?.getTasks ? (
-        <TaskContainer tasks={data.getTasks} />
+        <TaskContainer tasks={data.getTasks.tasks} />
       ) : (
         <p>No tasks</p>
       )}

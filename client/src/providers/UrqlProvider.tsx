@@ -1,6 +1,5 @@
 import { FC } from "react";
 import {
-  cacheExchange,
   createClient,
   dedupExchange,
   fetchExchange,
@@ -9,6 +8,8 @@ import {
 } from "urql";
 import { authExchange } from "@urql/exchange-auth";
 import { AuthConfig } from "@urql/exchange-auth/dist/types/authExchange";
+import { cacheExchange } from "@urql/exchange-graphcache";
+import { devtoolsExchange } from "@urql/devtools";
 import {
   validateAccessToken,
   refresh,
@@ -86,11 +87,22 @@ const willAuthError: AuthConfig<authStateType>["willAuthError"] = ({
   return false;
 };
 
+// const cache = cacheExchange({
+//   resolvers: {
+//     Query: {
+//       getTasks: (parent, args, cache, info) => {
+//         return { __typename: "Task", id: args.id };
+//       },
+//     },
+//   },
+// });
+
 export const client = createClient({
   url: "http://localhost:5000/graphql",
   exchanges: [
+    devtoolsExchange,
     dedupExchange,
-    cacheExchange,
+    cacheExchange(),
     authExchange({
       getAuth,
       addAuthToOperation,

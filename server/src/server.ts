@@ -12,8 +12,8 @@ import { HelloResolver } from "./resolvers/hello";
 import { TaskResolver } from "./resolvers/task";
 import { UserResolver } from "./resolvers/user";
 import { User } from "./entity/User";
-import { REFRESH_TOKEN_SECRET } from "./helpers/env";
-import { createAccessToken } from "./helpers/auth";
+import { REFRESH_TOKEN_SECRET } from "./utils/env";
+import { createAccessToken } from "./utils/auth";
 import { CourseResolver } from "./resolvers/course";
 
 const main = async () => {

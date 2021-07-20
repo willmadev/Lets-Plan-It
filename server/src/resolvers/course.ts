@@ -1,5 +1,5 @@
 import { Course } from "../entity/Course";
-import { MyContext } from "../helpers/types";
+import { MyContext } from "../utils/types";
 import { isAuth } from "../middlewares/isAuth";
 import {
   Arg,
@@ -18,7 +18,7 @@ import {
   Root,
   UseMiddleware,
 } from "type-graphql";
-import { getTasks } from "../helpers/tasks";
+import { getTasks } from "../utils/tasks";
 import { TaskFilterInput } from "./task";
 import { Task } from "../entity/Task";
 import { getConnection } from "typeorm";

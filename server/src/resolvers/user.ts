@@ -13,9 +13,9 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { hash, compare } from "bcrypt";
-import { createAccessToken, sendRefreshToken } from "../helpers/auth";
-import { SALT_ROUNDS } from "../helpers/env";
-import { MyContext } from "../helpers/types";
+import { createAccessToken, sendRefreshToken } from "../utils/auth";
+import { SALT_ROUNDS } from "../utils/env";
+import { MyContext } from "../utils/types";
 import { isAuth } from "../middlewares/isAuth";
 
 @InputType()

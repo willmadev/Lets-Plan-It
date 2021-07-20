@@ -117,12 +117,12 @@ const Course: FC<CourseProps> = ({ scrolledToBottom }) => {
 
   // fetch more when scrolled to bottom
   useEffect(() => {
-    if (scrolledToBottom) {
+    if (scrolledToBottom && tasksData?.getTasks.hasMore) {
       setLimit((limit) => limit + 10);
       reexecuteQuery();
     }
     // eslint-disable-next-line
-  }, [scrolledToBottom]);
+  }, [scrolledToBottom, tasksData]);
 
   //#region loading and no data
   if (courseFetching) {
@@ -165,7 +165,7 @@ const Course: FC<CourseProps> = ({ scrolledToBottom }) => {
             title="Tasks"
             count={courseData.getSingleCourse.taskCount}
           />
-          <TaskContainer tasks={tasksData.getTasks} />
+          <TaskContainer tasks={tasksData.getTasks.tasks} />
         </TaskListContainer>
       ) : (
         <p>No tasks</p>
