@@ -14,7 +14,7 @@ import {
 } from "type-graphql";
 import { hash, compare } from "bcrypt";
 import { createAccessToken, sendRefreshToken } from "../utils/auth";
-import { SALT_ROUNDS } from "../utils/env";
+import config from "../config";
 import { MyContext } from "../utils/types";
 import { isAuth } from "../middlewares/isAuth";
 
@@ -112,7 +112,7 @@ export class UserResolver {
     }
 
     // hash password
-    const hashedPassword = await hash(input.password, SALT_ROUNDS ?? 10);
+    const hashedPassword = await hash(input.password, config.SALT_ROUNDS ?? 10);
 
     // save user
     const newUser = User.create({

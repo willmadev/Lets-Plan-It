@@ -12,9 +12,9 @@ import { HelloResolver } from "./resolvers/hello";
 import { TaskResolver } from "./resolvers/task";
 import { UserResolver } from "./resolvers/user";
 import { User } from "./entity/User";
-import { REFRESH_TOKEN_SECRET } from "./utils/env";
 import { createAccessToken } from "./utils/auth";
 import { CourseResolver } from "./resolvers/course";
+import config from "./config";
 
 const main = async () => {
   dotenv.config();
@@ -24,7 +24,7 @@ const main = async () => {
   const app = express();
 
   const corsOptions = {
-    origin: "http://localhost:3000",
+    origin: config.BASE_URL,
     credentials: true,
   };
   app.use(cors(corsOptions));
@@ -44,7 +44,7 @@ const main = async () => {
 
     let payload: any;
     try {
-      payload = verify(token, REFRESH_TOKEN_SECRET);
+      payload = verify(token, config.REFRESH_TOKEN_SECRET);
     } catch (err) {
       console.error(err);
       return res
@@ -79,8 +79,8 @@ const main = async () => {
 
   apolloServer.applyMiddleware({ app, cors: corsOptions });
 
-  app.listen(process.env.PORT, () => {
-    console.log(`Server started on localhost:${process.env.PORT}`);
+  app.listen(config.PORT, () => {
+    console.log(`Server started on localhost:${config.PORT}`);
   });
 };
 

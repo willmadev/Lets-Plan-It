@@ -24,6 +24,7 @@ const ProtectedRoute: FC<RouteProps> = ({ ...rest }) => {
         if (!user) {
           setAuthenticated(false);
           history.push("/login");
+          return;
         }
 
         // update redux with user data

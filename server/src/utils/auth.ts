@@ -1,6 +1,6 @@
 import { User } from "src/entity/User";
 import jwt from "jsonwebtoken";
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "./env";
+import config from "../config";
 import { Response } from "express";
 
 export const createAccessToken = (user: User) => {
@@ -8,7 +8,7 @@ export const createAccessToken = (user: User) => {
     {
       userId: user.id,
     },
-    ACCESS_TOKEN_SECRET,
+    config.ACCESS_TOKEN_SECRET,
     { expiresIn: "15min" }
   );
 };
@@ -19,7 +19,7 @@ const createRefreshToken = (user: User) => {
       userId: user.id,
       version: user.refreshTokenVersion,
     },
-    REFRESH_TOKEN_SECRET,
+    config.REFRESH_TOKEN_SECRET,
     { expiresIn: "7d" }
   );
 };

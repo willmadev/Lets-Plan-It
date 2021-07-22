@@ -1,7 +1,7 @@
 import { verify } from "jsonwebtoken";
 import { MiddlewareFn } from "type-graphql";
 import { User } from "../entity/User";
-import { ACCESS_TOKEN_SECRET } from "../utils/env";
+import config from "../config";
 import { MyContext } from "../utils/types";
 
 export const isAuth: MiddlewareFn<MyContext> = async ({ context }, next) => {
@@ -14,7 +14,7 @@ export const isAuth: MiddlewareFn<MyContext> = async ({ context }, next) => {
   let payload: any;
   try {
     const token = authorization.split(" ")[1];
-    payload = verify(token, ACCESS_TOKEN_SECRET);
+    payload = verify(token, config.ACCESS_TOKEN_SECRET);
     console.log(payload);
   } catch (err) {
     console.error(err);
