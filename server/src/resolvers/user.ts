@@ -17,6 +17,12 @@ import { createAccessToken, sendRefreshToken } from "../utils/auth";
 import config from "../config";
 import { MyContext } from "../utils/types";
 import { isAuth } from "../middlewares/isAuth";
+import {
+  getAuthPayload,
+  getAuthUrl,
+  scopes,
+  setGoogleTokens,
+} from "../utils/googelApi";
 
 @InputType()
 class RegisterInput {
@@ -64,7 +70,7 @@ class AuthError {
     this.message = message;
   }
   @Field()
-  field: "Email" | "Password" | "Name";
+  field: "Email" | "Password" | "Name" | "Google";
 
   @Field()
   message: String;
@@ -77,6 +83,15 @@ class LoginInput {
 
   @Field()
   password: string;
+}
+
+@InputType()
+class GoogleAuthInput {
+  @Field()
+  state: string;
+
+  @Field()
+  code: string;
 }
 
 @Resolver()
@@ -125,8 +140,6 @@ export class UserResolver {
 
     // jwt token
     const accessToken = createAccessToken(newUser);
-
-    // TODO: Refresh token
     sendRefreshToken(res, newUser);
 
     // Return payload
@@ -155,6 +168,13 @@ export class UserResolver {
       });
     }
 
+    if (!user.password) {
+      return new AuthError({
+        field: "Password",
+        message: "Please sign in with google.",
+      });
+    }
+
     // check password
     if (!(await compare(input.password, user.password))) {
       return new AuthError({
@@ -166,7 +186,7 @@ export class UserResolver {
     // jwt token
     const accessToken = createAccessToken(user);
 
-    // TODO: Refresh token
+    // Refresh token
     sendRefreshToken(res, user);
 
     // return
@@ -175,6 +195,109 @@ export class UserResolver {
       name: user.name,
       email: user.email,
       accessToken: accessToken,
+    });
+  }
+
+  // #region Google signin
+  @Query(() => String)
+  getGoogleAuthUrl() {
+    return getAuthUrl([scopes.email, scopes.profile]);
+  }
+
+  @Mutation(() => AuthResult)
+  async googleLogin(
+    @Ctx() { res }: MyContext,
+    @Arg("input") input: GoogleAuthInput
+  ) {
+    // TODO: Check state
+    console.log(input.state);
+
+    const tokens = await setGoogleTokens(input.code);
+    if (!tokens || !tokens.id_token) {
+      return new AuthError({
+        field: "Google",
+        message: "Token error",
+      });
+    }
+
+    const payload = await getAuthPayload(tokens.id_token);
+    if (!payload) {
+      return new AuthError({
+        field: "Google",
+        message: "User payload error",
+      });
+    }
+
+    // get from database
+    const user = await User.findOne({ email: payload.email });
+    if (!user) {
+      return new AuthError({
+        field: "Email",
+        message: "No account found.",
+      });
+    }
+
+    const accessToken = createAccessToken(user);
+    sendRefreshToken(res, user);
+
+    // return
+    return new AuthPayload({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      accessToken,
+    });
+  }
+
+  @Mutation(() => AuthResult)
+  async googleRegister(
+    @Ctx() { res }: MyContext,
+    @Arg("input") input: GoogleAuthInput
+  ) {
+    // TODO: Check state
+    console.log(input);
+
+    const tokens = await setGoogleTokens(input.code);
+    if (!tokens || !tokens.id_token) {
+      return new AuthError({
+        field: "Google",
+        message: "Token error",
+      });
+    }
+
+    const payload = await getAuthPayload(tokens.id_token);
+    if (!payload) {
+      return new AuthError({
+        field: "Google",
+        message: "User payload error",
+      });
+    }
+
+    // get from database
+    const user = await User.findOne({ email: payload.email });
+    if (user) {
+      return new AuthError({
+        field: "Email",
+        message: "User already exists.",
+      });
+    }
+
+    const newUser = User.create({
+      name: payload.name,
+      email: payload.email,
+    });
+
+    await User.insert(newUser);
+
+    const accessToken = createAccessToken(newUser);
+    sendRefreshToken(res, newUser);
+
+    // return
+    return new AuthPayload({
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email,
+      accessToken,
     });
   }
 }

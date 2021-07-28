@@ -25,8 +25,8 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   email!: string;
 
-  @Column()
-  password!: string;
+  @Column({ nullable: true })
+  password: string;
 
   @Column()
   @Generated("increment")
