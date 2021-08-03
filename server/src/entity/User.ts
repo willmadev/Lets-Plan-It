@@ -6,9 +6,13 @@ import {
   OneToMany,
   BaseEntity,
   Generated,
+  OneToOne,
 } from "typeorm";
 import { Course } from "./Course";
+import GoogleUser from "./GoogleUser";
 import { Task } from "./Task";
+
+type authType = "password" | "google";
 
 @ObjectType()
 @Entity()
@@ -32,9 +36,19 @@ export class User extends BaseEntity {
   @Generated("increment")
   refreshTokenVersion!: number;
 
+  @Column()
+  authType: authType;
+
   @OneToMany(() => Course, (course) => course.user)
   courses: Course[];
 
   @OneToMany(() => Task, (task) => task.user)
   tasks: Task[];
+
+  @OneToOne(() => GoogleUser, (googleUser) => googleUser.user)
+  googleUser: GoogleUser;
+
+  static findByEmail(email: string) {
+    return User.findOne({ email });
+  }
 }

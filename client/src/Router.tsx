@@ -5,6 +5,7 @@ import App from "./pages/App";
 import TestAuth from "./pages/TestAuth";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import GoogleCallback from "./pages/GoogleCallback";
 
 const Router = () => {
   return (
@@ -12,6 +13,7 @@ const Router = () => {
       <Route exact path="/" component={Landing} />
       <Route exact path="/login" component={Login} />
       <Route exact path="/register" component={Register} />
+      <Route exact path="/googlecb" component={GoogleCallback} />
       <Route path="/app" component={App} />
       <Route exact path="/testAuth" component={TestAuth} />
     </Switch>

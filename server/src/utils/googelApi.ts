@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+import JWT from "jsonwebtoken";
 import config from "../config";
 
 const oauth2Client = new google.auth.OAuth2({
@@ -14,12 +15,19 @@ export const scopes = {
   profile: "https://www.googleapis.com/auth/userinfo.profile",
 };
 
-export const getAuthUrl = (scopes: string[]) => {
+export type googleAuthAction = "signIn" | "signUp";
+export type stateParams = { action: googleAuthAction };
+
+const generateState = (params: stateParams) => {
+  return JWT.sign(params, config.GOOGLE_STATE_SECRET);
+};
+
+export const getAuthUrl = (action: googleAuthAction, scopes: string[]) => {
+  const state = generateState({ action });
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: scopes,
-    // todo: state
-    state: "test",
+    state,
   });
   return url;
 };

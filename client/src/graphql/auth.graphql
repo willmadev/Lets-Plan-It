@@ -1,0 +1,54 @@
+mutation Login($input: LoginInput!) {
+  login(input: $input) {
+    ...AuthResultFragment
+  }
+}
+
+mutation Register($input: RegisterInput!) {
+  register(input: $input) {
+    ...AuthResultFragment
+  }
+}
+
+query GetGoogleAuthUrl($action: String!) {
+  getGoogleAuthUrl(action: $action)
+}
+
+mutation GoogleAuth($input: GoogleAuthInput!) {
+  googleAuth(input: $input) {
+    ...AuthResultFragment
+  }
+}
+
+fragment AuthResultFragment on AuthResult {
+  ... on AuthPayload {
+    ...AuthPayloadFragment
+  }
+  ... on AuthError {
+    ...AuthErrorFragment
+  }
+}
+
+fragment AuthPayloadFragment on AuthPayload {
+  id
+  email
+  name
+  accessToken
+}
+
+fragment AuthErrorFragment on AuthError {
+  field
+  message
+}
+
+query TestAuth {
+  testAuth
+}
+
+query GetUser {
+  getUser {
+    id
+    name
+    email
+  }
+}

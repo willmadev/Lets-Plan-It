@@ -13,6 +13,7 @@ import {
   AuthSubmitButton,
   AuthTitle,
   AuthTitleContainer,
+  Divider,
 } from "src/styles/auth";
 import {
   Exact,
@@ -22,6 +23,7 @@ import {
 } from "src/generated/graphql";
 import { StyledLink, StyledParagraph } from "src/styles/global";
 import { setUser } from "src/store/user/user.slice";
+import GoogleAuthButton from "src/components/Auth/GoogleAuthButton";
 
 const Register: React.FC<RouteComponentProps> = ({ history }) => {
   const dispatch = useDispatch();
@@ -135,6 +137,8 @@ const Register: React.FC<RouteComponentProps> = ({ history }) => {
               disabled={registerState.fetching}
             />
           </AuthForm>
+          <Divider />
+          <GoogleAuthButton action="signUp" />
         </AuthFormWrapper>
       </AuthFormLayout>
     </AuthPageWrapper>

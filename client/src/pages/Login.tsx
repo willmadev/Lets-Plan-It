@@ -13,6 +13,7 @@ import {
   AuthFlashMessage,
   AuthPageWrapper,
   AuthTitleContainer,
+  Divider,
 } from "src/styles/auth";
 import {
   Exact,
@@ -22,6 +23,7 @@ import {
 } from "src/generated/graphql";
 import { StyledParagraph, StyledLink } from "src/styles/global";
 import { setUser } from "src/store/user/user.slice";
+import GoogleAuthButton from "src/components/Auth/GoogleAuthButton";
 
 const Login: FC<RouteComponentProps> = ({ history }) => {
   const [inputField, setInputField] = useState({
@@ -120,6 +122,8 @@ const Login: FC<RouteComponentProps> = ({ history }) => {
               disabled={loginState.fetching}
             />
           </AuthForm>
+          <Divider />
+          <GoogleAuthButton action="signIn" />
         </AuthFormWrapper>
       </AuthFormLayout>
     </AuthPageWrapper>

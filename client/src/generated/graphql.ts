@@ -73,6 +73,11 @@ export type GetTasksResult = {
   cursor: Scalars['ID'];
 };
 
+export type GoogleAuthInput = {
+  state: Scalars['String'];
+  code: Scalars['String'];
+};
+
 export type LoginInput = {
   email: Scalars['String'];
   password: Scalars['String'];
@@ -101,6 +106,7 @@ export type Mutation = {
   deleteTask: Scalars['Boolean'];
   register: AuthResult;
   login: AuthResult;
+  googleAuth: AuthResult;
   createCourse: MutateCourseResult;
   updateCourse: MutateCourseResult;
   deleteCourse: Scalars['Boolean'];
@@ -132,6 +138,11 @@ export type MutationLoginArgs = {
 };
 
 
+export type MutationGoogleAuthArgs = {
+  input: GoogleAuthInput;
+};
+
+
 export type MutationCreateCourseArgs = {
   input: CreateCourseInput;
 };
@@ -153,6 +164,7 @@ export type Query = {
   getTasks: GetTasksResult;
   getSingleTask?: Maybe<Task>;
   getUser: User;
+  getGoogleAuthUrl: Scalars['String'];
   getCourses?: Maybe<Array<Course>>;
   getSingleCourse?: Maybe<Course>;
 };
@@ -167,6 +179,11 @@ export type QueryGetTasksArgs = {
 
 export type QueryGetSingleTaskArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryGetGoogleAuthUrlArgs = {
+  action: Scalars['String'];
 };
 
 
@@ -226,10 +243,10 @@ export type LoginMutation = (
   { __typename?: 'Mutation' }
   & { login: (
     { __typename?: 'AuthPayload' }
-    & Pick<AuthPayload, 'id' | 'email' | 'name' | 'accessToken'>
+    & AuthResultFragment_AuthPayload_Fragment
   ) | (
     { __typename?: 'AuthError' }
-    & Pick<AuthError, 'field' | 'message'>
+    & AuthResultFragment_AuthError_Fragment
   ) }
 );
 
@@ -242,11 +259,59 @@ export type RegisterMutation = (
   { __typename?: 'Mutation' }
   & { register: (
     { __typename?: 'AuthPayload' }
-    & Pick<AuthPayload, 'id' | 'email' | 'name' | 'accessToken'>
+    & AuthResultFragment_AuthPayload_Fragment
   ) | (
     { __typename?: 'AuthError' }
-    & Pick<AuthError, 'field' | 'message'>
+    & AuthResultFragment_AuthError_Fragment
   ) }
+);
+
+export type GetGoogleAuthUrlQueryVariables = Exact<{
+  action: Scalars['String'];
+}>;
+
+
+export type GetGoogleAuthUrlQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'getGoogleAuthUrl'>
+);
+
+export type GoogleAuthMutationVariables = Exact<{
+  input: GoogleAuthInput;
+}>;
+
+
+export type GoogleAuthMutation = (
+  { __typename?: 'Mutation' }
+  & { googleAuth: (
+    { __typename?: 'AuthPayload' }
+    & AuthResultFragment_AuthPayload_Fragment
+  ) | (
+    { __typename?: 'AuthError' }
+    & AuthResultFragment_AuthError_Fragment
+  ) }
+);
+
+type AuthResultFragment_AuthPayload_Fragment = (
+  { __typename?: 'AuthPayload' }
+  & AuthPayloadFragmentFragment
+);
+
+type AuthResultFragment_AuthError_Fragment = (
+  { __typename?: 'AuthError' }
+  & AuthErrorFragmentFragment
+);
+
+export type AuthResultFragmentFragment = AuthResultFragment_AuthPayload_Fragment | AuthResultFragment_AuthError_Fragment;
+
+export type AuthPayloadFragmentFragment = (
+  { __typename?: 'AuthPayload' }
+  & Pick<AuthPayload, 'id' | 'email' | 'name' | 'accessToken'>
+);
+
+export type AuthErrorFragmentFragment = (
+  { __typename?: 'AuthError' }
+  & Pick<AuthError, 'field' | 'message'>
 );
 
 export type TestAuthQueryVariables = Exact<{ [key: string]: never; }>;
@@ -459,6 +524,31 @@ export type TestQuery = (
   & Pick<Query, 'hello'>
 );
 
+export const AuthPayloadFragmentFragmentDoc = gql`
+    fragment AuthPayloadFragment on AuthPayload {
+  id
+  email
+  name
+  accessToken
+}
+    `;
+export const AuthErrorFragmentFragmentDoc = gql`
+    fragment AuthErrorFragment on AuthError {
+  field
+  message
+}
+    `;
+export const AuthResultFragmentFragmentDoc = gql`
+    fragment AuthResultFragment on AuthResult {
+  ... on AuthPayload {
+    ...AuthPayloadFragment
+  }
+  ... on AuthError {
+    ...AuthErrorFragment
+  }
+}
+    ${AuthPayloadFragmentFragmentDoc}
+${AuthErrorFragmentFragmentDoc}`;
 export const CourseFragmentFragmentDoc = gql`
     fragment CourseFragment on Course {
   __typename
@@ -511,19 +601,10 @@ export const MutateTaskFragmentFragmentDoc = gql`
 export const LoginDocument = gql`
     mutation Login($input: LoginInput!) {
   login(input: $input) {
-    ... on AuthPayload {
-      id
-      email
-      name
-      accessToken
-    }
-    ... on AuthError {
-      field
-      message
-    }
+    ...AuthResultFragment
   }
 }
-    `;
+    ${AuthResultFragmentFragmentDoc}`;
 
 export function useLoginMutation() {
   return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
@@ -531,22 +612,33 @@ export function useLoginMutation() {
 export const RegisterDocument = gql`
     mutation Register($input: RegisterInput!) {
   register(input: $input) {
-    ... on AuthPayload {
-      id
-      email
-      name
-      accessToken
-    }
-    ... on AuthError {
-      field
-      message
-    }
+    ...AuthResultFragment
   }
 }
-    `;
+    ${AuthResultFragmentFragmentDoc}`;
 
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
+export const GetGoogleAuthUrlDocument = gql`
+    query GetGoogleAuthUrl($action: String!) {
+  getGoogleAuthUrl(action: $action)
+}
+    `;
+
+export function useGetGoogleAuthUrlQuery(options: Omit<Urql.UseQueryArgs<GetGoogleAuthUrlQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetGoogleAuthUrlQuery>({ query: GetGoogleAuthUrlDocument, ...options });
+};
+export const GoogleAuthDocument = gql`
+    mutation GoogleAuth($input: GoogleAuthInput!) {
+  googleAuth(input: $input) {
+    ...AuthResultFragment
+  }
+}
+    ${AuthResultFragmentFragmentDoc}`;
+
+export function useGoogleAuthMutation() {
+  return Urql.useMutation<GoogleAuthMutation, GoogleAuthMutationVariables>(GoogleAuthDocument);
 };
 export const TestAuthDocument = gql`
     query TestAuth {
@@ -689,6 +781,31 @@ export const TestDocument = gql`
 export function useTestQuery(options: Omit<Urql.UseQueryArgs<TestQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<TestQuery>({ query: TestDocument, ...options });
 };
+export const AuthPayloadFragment = gql`
+    fragment AuthPayloadFragment on AuthPayload {
+  id
+  email
+  name
+  accessToken
+}
+    `;
+export const AuthErrorFragment = gql`
+    fragment AuthErrorFragment on AuthError {
+  field
+  message
+}
+    `;
+export const AuthResultFragment = gql`
+    fragment AuthResultFragment on AuthResult {
+  ... on AuthPayload {
+    ...AuthPayloadFragment
+  }
+  ... on AuthError {
+    ...AuthErrorFragment
+  }
+}
+    ${AuthPayloadFragment}
+${AuthErrorFragment}`;
 export const CourseFragment = gql`
     fragment CourseFragment on Course {
   __typename
@@ -741,35 +858,29 @@ export const MutateTaskFragment = gql`
 export const Login = gql`
     mutation Login($input: LoginInput!) {
   login(input: $input) {
-    ... on AuthPayload {
-      id
-      email
-      name
-      accessToken
-    }
-    ... on AuthError {
-      field
-      message
-    }
+    ...AuthResultFragment
   }
 }
-    `;
+    ${AuthResultFragment}`;
 export const Register = gql`
     mutation Register($input: RegisterInput!) {
   register(input: $input) {
-    ... on AuthPayload {
-      id
-      email
-      name
-      accessToken
-    }
-    ... on AuthError {
-      field
-      message
-    }
+    ...AuthResultFragment
   }
 }
+    ${AuthResultFragment}`;
+export const GetGoogleAuthUrl = gql`
+    query GetGoogleAuthUrl($action: String!) {
+  getGoogleAuthUrl(action: $action)
+}
     `;
+export const GoogleAuth = gql`
+    mutation GoogleAuth($input: GoogleAuthInput!) {
+  googleAuth(input: $input) {
+    ...AuthResultFragment
+  }
+}
+    ${AuthResultFragment}`;
 export const TestAuth = gql`
     query TestAuth {
   testAuth

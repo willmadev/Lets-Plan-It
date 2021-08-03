@@ -21,9 +21,11 @@ const AuthFormLayout = styled.div`
 
 const AuthFormWrapper = styled.div`
   width: calc(100% - 80px);
-  height: calc(100% - 120px);
+  height: calc(100% - 70px);
   padding: 35px 40px;
   display: flex;
+  gap: 40px;
+  justify-content: space-evenly;
   flex-direction: column;
   align-items: center;
 `;
@@ -44,8 +46,7 @@ const AuthForm = styled.form`
   display: flex;
   flex-direction: column;
   width: 90%;
-  height: 100%;
-  margin: 40px 0px;
+  height: 80%;
   align-items: center;
   justify-content: center;
 `;
@@ -72,11 +73,11 @@ const AuthFlashMessage = styled.p`
 `;
 
 const AuthSubmitButton = styled.input`
-  margin-top: 60px;
+  margin-top: 20px;
   padding: 10px 25px;
   background-color: ${(props) => props.theme.color.primary};
   border: none;
-  border-radius: 25px;
+  border-radius: 22px;
   font-family: "open sans", sans-serif;
   font-weight: 600;
   font-size: 24px;
@@ -86,6 +87,10 @@ const AuthSubmitButton = styled.input`
     cursor: pointer;
     background-color: ${(props) => props.theme.color.primaryHover};
   }
+`;
+
+const Divider = styled.hr`
+  width: 100%;
 `;
 
 export {
@@ -98,4 +103,5 @@ export {
   AuthInputField,
   AuthFlashMessage,
   AuthSubmitButton,
+  Divider,
 };
